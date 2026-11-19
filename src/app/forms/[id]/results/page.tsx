@@ -1,0 +1,32 @@
+import { notFound } from "next/navigation";
+import { ResultsView } from "@/components/results/ResultsView";
+import { requireUser } from "@/lib/auth";
+import { formStats, getForm, listResponses } from "@/lib/forms";
+import { rangeSince } from "@/lib/range";
+import { summarize } from "@/lib/summary";
+
+export const metadata = { title: "Results" };
+
+export default async function ResultsPage({ params, searchParams }: PageProps<"/forms/[id]/results">) {
+  const { id } = await params;
+  const sp = await searchParams;
+  const user = await requireUser();
+  const form = getForm(id, user.id);
+  if (!form) notFound();
+  const { key, since } = rangeSince(typeof sp.range === "string" ? sp.range : undefined);
+  const responses = listResponses(form.id, { since });
+  const stats = formStats(form.id, since);
+  const def = form.draft;
+  return (
+    <ResultsView
+      formId={form.id}
+      def={def}
+      range={key}
+      view={sp.view === "responses" ? "responses" : "summary"}
+      stats={stats}
+      summary={summarize(def, responses)}
+      responses={responses}
+      isPublished={Boolean(form.published)}
+    />
+  );
+}
