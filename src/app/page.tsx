@@ -28,7 +28,7 @@ import { ThemedDemo } from "@/components/landing/ThemedDemo";
 import { getCurrentUser } from "@/lib/auth";
 import { demoForm } from "@/lib/demo";
 import { FIELD_META, FIELD_TYPES } from "@/lib/schema";
-import { REPO_URL } from "@/lib/url";
+import { appUrl, REPO_URL } from "@/lib/url";
 
 
 export default async function Home() {
@@ -91,7 +91,7 @@ export default async function Home() {
       </header>
 
       {/* =============================================================== hero */}
-      <HeroHorizon cta={cta} repo={REPO_URL} />
+      <HeroHorizon cta={cta} repo={REPO_URL} base={await appUrl()} />
 
       {/* =============================================================== demo */}
       <section id="demo" className="relative scroll-mt-24 px-5 pt-10 pb-28">

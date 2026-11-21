@@ -2,9 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { signupsAllowed } from "@/lib/actions/auth";
 import { createSession, findUserByEmail, findUserByGoogleId, insertUser, linkGoogle } from "@/lib/auth";
-import { createForm } from "@/lib/forms";
 import { callbackUrl, GOOGLE_STATE_COOKIE, googleEnabled, googleProfile } from "@/lib/google";
-import { TEMPLATES } from "@/lib/templates";
 import { appUrl } from "@/lib/url";
 
 export async function GET(req: Request) {
@@ -38,6 +36,7 @@ export async function GET(req: Request) {
   if (!profile.emailVerified) return fail("Your Google email isn't verified yet.");
 
   let user = await findUserByGoogleId(profile.sub);
+  let isNew = false;
   if (!user) {
     const existing = await findUserByEmail(profile.email);
     if (existing) {
@@ -47,11 +46,12 @@ export async function GET(req: Request) {
     } else {
       if (!(await signupsAllowed())) return fail("Sign-ups are disabled on this instance.");
       user = await insertUser(profile.email, profile.name, null, profile.sub);
-      await createForm(user.id, TEMPLATES.find((t) => t.key === "nps")!.build());
+      isNew = true;
     }
   }
 
   await createSession(user.id);
+  if (isNew) return NextResponse.redirect(`${base}/welcome`);
   const next = flow.next ?? "";
   return NextResponse.redirect(`${base}${next.startsWith("/") && !next.startsWith("//") ? next : "/forms"}`);
 }

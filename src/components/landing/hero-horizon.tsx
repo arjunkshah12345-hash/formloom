@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Check, ChevronRight, Copy } from "lucide-react";
+import { ArrowUpRight, Bot, Check, ChevronRight } from "lucide-react";
 import { DitherShader } from "@/lib/dither";
+import { agentPrompt } from "@/lib/agent-prompt";
 
 /** A planet rim rising from the bottom edge, with a thin atmosphere and a few stars. */
 const HORIZON = `
@@ -32,14 +33,14 @@ float field(vec2 uv, vec2 res, float t) {
 }
 `;
 
-function CopyCommand({ command }: { command: string }) {
+function CopyPrompt({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <button
       type="button"
       onClick={async () => {
         try {
-          await navigator.clipboard.writeText(command);
+          await navigator.clipboard.writeText(text);
           setCopied(true);
           setTimeout(() => setCopied(false), 1600);
         } catch {
@@ -48,15 +49,15 @@ function CopyCommand({ command }: { command: string }) {
       }}
       className="inline-flex h-10 items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-4 text-[14px] text-ink-2 transition hover:border-white/25 hover:text-ink"
     >
-      {copied ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
-      {copied ? "Copied" : "Copy self-host command"}
+      {copied ? <Check className="size-3.5 text-emerald-400" /> : <Bot className="size-3.5" />}
+      {copied ? "Copied. Paste it to your agent" : "Copy agent setup prompt"}
     </button>
   );
 }
 
 /** Quiet centred hero: small headline, two actions, a dithered horizon underneath. */
-export function HeroHorizon({ cta, repo }: { cta: string; repo: string }) {
-  const command = `git clone ${repo} && cd formloom && docker build -t formloom . && docker run -p 3000:3000 -v formloom:/app/data formloom`;
+export function HeroHorizon({ cta, repo, base }: { cta: string; repo: string; base: string }) {
+  const prompt = agentPrompt({ base });
 
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
@@ -85,8 +86,8 @@ export function HeroHorizon({ cta, repo }: { cta: string; repo: string }) {
         </h1>
 
         <p className="mt-5 max-w-[46ch] text-[17px] leading-relaxed text-ink-2 text-balance">
-          The open-source Typeform alternative. Conversational forms with logic, themes and analytics, self-hosted from
-          a single SQLite file.
+          The open-source Typeform alternative. Conversational forms with logic, themes and analytics. Hand your coding
+          agent one prompt and they&rsquo;re live in your app.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
@@ -97,7 +98,7 @@ export function HeroHorizon({ cta, repo }: { cta: string; repo: string }) {
             Build a form
             <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
           </Link>
-          <CopyCommand command={command} />
+          <CopyPrompt text={prompt} />
         </div>
 
         <p className="mt-6 text-[13px] text-ink-3">

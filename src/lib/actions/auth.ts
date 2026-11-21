@@ -9,8 +9,6 @@ import {
   userCount,
   verifyPassword,
 } from "@/lib/auth";
-import { createForm } from "@/lib/forms";
-import { TEMPLATES } from "@/lib/templates";
 
 export type AuthState = { error?: string; email?: string; name?: string } | undefined;
 
@@ -29,10 +27,9 @@ export async function signup(_: AuthState, data: FormData): Promise<AuthState> {
   if (await findUserByEmail(email)) return { error: "An account with this email already exists.", email, name };
 
   const user = await insertUser(email, name, password);
-  // Give new accounts something to look at.
-  await createForm(user.id, TEMPLATES.find((t) => t.key === "nps")!.build());
   await createSession(user.id);
-  redirect("/forms");
+  // Onboarding creates the first form.
+  redirect("/welcome");
 }
 
 export async function login(_: AuthState, data: FormData): Promise<AuthState> {
