@@ -80,6 +80,8 @@ Schema changes go in `migrations/` (for D1) and in `MIGRATIONS` in `src/lib/db.t
 | `UPLOAD_DIR` | `./data/uploads` | Uploaded images |
 | `ALLOW_SIGNUPS` | `true` | Set `false` to lock the instance after creating your account |
 | `SECURE_COOKIES` | on when `APP_URL` is https | Force the `Secure` cookie flag |
+| `GOOGLE_CLIENT_ID` | unset | OAuth client ID; with the secret, turns on "Continue with Google" |
+| `GOOGLE_CLIENT_SECRET` | unset | OAuth client secret. Redirect URI: `<your URL>/api/auth/google/callback` |
 
 ## Embedding
 

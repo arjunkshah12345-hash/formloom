@@ -61,7 +61,7 @@ export async function verifyPassword(password: string, stored: string): Promise<
 
 export const sha256 = (s: string) => crypto.createHash("sha256").update(s).digest("hex");
 
-function secureCookies() {
+export function secureCookies() {
   if (process.env.SECURE_COOKIES) return process.env.SECURE_COOKIES === "true";
   return (process.env.APP_URL ?? "").startsWith("https://");
 }
@@ -111,17 +111,32 @@ export async function findUserByEmail(email: string) {
   );
 }
 
-export async function insertUser(email: string, name: string, password: string): Promise<User> {
+/** `password` is null for accounts that only sign in with Google; an empty hash never verifies. */
+export async function insertUser(
+  email: string,
+  name: string,
+  password: string | null,
+  googleId: string | null = null,
+): Promise<User> {
   const user = { id: uid("u"), email: email.toLowerCase().trim(), name: name.trim() };
   await (await db()).run(
-    "INSERT INTO users (id, email, name, password_hash, created_at) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO users (id, email, name, password_hash, google_id, created_at) VALUES (?, ?, ?, ?, ?, ?)",
     user.id,
     user.email,
     user.name,
-    await hashPassword(password),
+    password === null ? "" : await hashPassword(password),
+    googleId,
     Date.now(),
   );
   return user;
+}
+
+export async function findUserByGoogleId(googleId: string) {
+  return (await db()).get<User>("SELECT id, email, name FROM users WHERE google_id = ?", googleId);
+}
+
+export async function linkGoogle(userId: string, googleId: string) {
+  await (await db()).run("UPDATE users SET google_id = ? WHERE id = ?", googleId, userId);
 }
 
 export async function userCount(): Promise<number> {

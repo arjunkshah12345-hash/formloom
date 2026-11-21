@@ -90,6 +90,10 @@ const MIGRATIONS: string[] = [
   );
   CREATE INDEX webhook_deliveries_form ON webhook_deliveries(form_id, created_at DESC);
   `,
+  `
+  ALTER TABLE users ADD COLUMN google_id TEXT;
+  CREATE UNIQUE INDEX users_google ON users(google_id);
+  `,
 ];
 
 // ---------------------------------------------------------------------------
