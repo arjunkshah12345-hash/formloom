@@ -7,6 +7,6 @@ export const metadata = { title: "Settings" };
 export default async function SettingsPage({ params }: PageProps<"/forms/[id]/settings">) {
   const { id } = await params;
   const user = await requireUser();
-  const form = getForm(id, user.id);
-  return <SettingsView deliveries={form ? recentWebhooks(form.id) : []} />;
+  const form = await getForm(id, user.id);
+  return <SettingsView deliveries={form ? await recentWebhooks(form.id) : []} />;
 }

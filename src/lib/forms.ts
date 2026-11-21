@@ -1,5 +1,5 @@
 import "server-only";
-import { db, tx } from "./db";
+import { db } from "./db";
 import { normalizeDefinition, uid, type Answers, type FormDefinition } from "./schema";
 
 export type FormRow = {
@@ -58,14 +58,13 @@ function newSlug() {
   return uid().slice(0, 8);
 }
 
-export function listForms(userId: string): FormListItem[] {
-  const rows = db()
-    .prepare(
-      `SELECT f.*, COUNT(r.id) AS response_count, MAX(r.submitted_at) AS last_response_at
-       FROM forms f LEFT JOIN responses r ON r.form_id = f.id
-       WHERE f.user_id = ? GROUP BY f.id ORDER BY f.updated_at DESC`,
-    )
-    .all(userId) as unknown as (RawForm & { response_count: number; last_response_at: number | null })[];
+export async function listForms(userId: string): Promise<FormListItem[]> {
+  const rows = await (await db()).all<RawForm & { response_count: number; last_response_at: number | null }>(
+    `SELECT f.*, COUNT(r.id) AS response_count, MAX(r.submitted_at) AS last_response_at
+     FROM forms f LEFT JOIN responses r ON r.form_id = f.id
+     WHERE f.user_id = ? GROUP BY f.id ORDER BY f.updated_at DESC`,
+    userId,
+  );
   return rows.map((r) => {
     const draft = normalizeDefinition(JSON.parse(r.draft));
     return {
@@ -84,84 +83,95 @@ export function listForms(userId: string): FormListItem[] {
   });
 }
 
-export function getForm(id: string, userId: string): FormRow | null {
-  const r = db().prepare("SELECT * FROM forms WHERE id = ? AND user_id = ?").get(id, userId) as
-    | RawForm
-    | undefined;
+export async function getForm(id: string, userId: string): Promise<FormRow | null> {
+  const r = await (await db()).get<RawForm>("SELECT * FROM forms WHERE id = ? AND user_id = ?", id, userId);
   return r ? toRow(r) : null;
 }
 
-export function getFormBySlug(slug: string): FormRow | null {
-  const r = db().prepare("SELECT * FROM forms WHERE slug = ?").get(slug) as RawForm | undefined;
+export async function getFormBySlug(slug: string): Promise<FormRow | null> {
+  const r = await (await db()).get<RawForm>("SELECT * FROM forms WHERE slug = ?", slug);
   return r ? toRow(r) : null;
 }
 
-export function getFormById(id: string): FormRow | null {
-  const r = db().prepare("SELECT * FROM forms WHERE id = ?").get(id) as RawForm | undefined;
+export async function getFormById(id: string): Promise<FormRow | null> {
+  const r = await (await db()).get<RawForm>("SELECT * FROM forms WHERE id = ?", id);
   return r ? toRow(r) : null;
 }
 
-export function createForm(userId: string, def: FormDefinition): string {
+export async function createForm(userId: string, def: FormDefinition): Promise<string> {
   const id = uid("form");
   const now = Date.now();
-  db()
-    .prepare(
-      `INSERT INTO forms (id, user_id, slug, title, draft, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    )
-    .run(id, userId, newSlug(), def.title, JSON.stringify(def), now, now);
+  await (await db()).run(
+    `INSERT INTO forms (id, user_id, slug, title, draft, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    id,
+    userId,
+    newSlug(),
+    def.title,
+    JSON.stringify(def),
+    now,
+    now,
+  );
   return id;
 }
 
-export function saveDraft(id: string, userId: string, def: FormDefinition): number {
+export async function saveDraft(id: string, userId: string, def: FormDefinition): Promise<number> {
   const now = Date.now();
-  const res = db()
-    .prepare("UPDATE forms SET draft = ?, title = ?, updated_at = ? WHERE id = ? AND user_id = ?")
-    .run(JSON.stringify(def), def.title.trim() || "Untitled form", now, id, userId);
+  const res = await (await db()).run(
+    "UPDATE forms SET draft = ?, title = ?, updated_at = ? WHERE id = ? AND user_id = ?",
+    JSON.stringify(def),
+    def.title.trim() || "Untitled form",
+    now,
+    id,
+    userId,
+  );
   if (!res.changes) throw new Error("Form not found");
   return now;
 }
 
-export function publishForm(id: string, userId: string) {
+export async function publishForm(id: string, userId: string) {
   const now = Date.now();
-  db()
-    .prepare(
-      "UPDATE forms SET published = draft, published_at = ?, updated_at = ? WHERE id = ? AND user_id = ?",
-    )
-    .run(now, now, id, userId);
+  await (await db()).run(
+    "UPDATE forms SET published = draft, published_at = ?, updated_at = ? WHERE id = ? AND user_id = ?",
+    now,
+    now,
+    id,
+    userId,
+  );
 }
 
-export function unpublishForm(id: string, userId: string) {
-  db()
-    .prepare("UPDATE forms SET published = NULL, published_at = NULL WHERE id = ? AND user_id = ?")
-    .run(id, userId);
+export async function unpublishForm(id: string, userId: string) {
+  await (await db()).run(
+    "UPDATE forms SET published = NULL, published_at = NULL WHERE id = ? AND user_id = ?",
+    id,
+    userId,
+  );
 }
 
-export function deleteForm(id: string, userId: string) {
-  db().prepare("DELETE FROM forms WHERE id = ? AND user_id = ?").run(id, userId);
+export async function deleteForm(id: string, userId: string) {
+  await (await db()).run("DELETE FROM forms WHERE id = ? AND user_id = ?", id, userId);
 }
 
-export function duplicateForm(id: string, userId: string): string | null {
-  const form = getForm(id, userId);
+export async function duplicateForm(id: string, userId: string): Promise<string | null> {
+  const form = await getForm(id, userId);
   if (!form) return null;
   return createForm(userId, { ...form.draft, title: `${form.draft.title} (copy)` });
 }
 
 /** Update a single setting on both draft and published versions (e.g. open/close). */
-export function patchSettings(id: string, userId: string, patch: Partial<FormDefinition["settings"]>) {
-  const form = getForm(id, userId);
+export async function patchSettings(id: string, userId: string, patch: Partial<FormDefinition["settings"]>) {
+  const form = await getForm(id, userId);
   if (!form) return;
   const apply = (d: FormDefinition) => ({ ...d, settings: { ...d.settings, ...patch } });
   const draftJson = JSON.stringify(apply(form.draft));
   const wasInSync = form.published && JSON.stringify(form.published) === JSON.stringify(form.draft);
-  db()
-    .prepare("UPDATE forms SET draft = ?, published = ?, updated_at = ? WHERE id = ?")
-    .run(
-      draftJson,
-      form.published ? (wasInSync ? draftJson : JSON.stringify(apply(form.published))) : null,
-      Date.now(),
-      id,
-    );
+  await (await db()).run(
+    "UPDATE forms SET draft = ?, published = ?, updated_at = ? WHERE id = ?",
+    draftJson,
+    form.published ? (wasInSync ? draftJson : JSON.stringify(apply(form.published))) : null,
+    Date.now(),
+    id,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -200,17 +210,14 @@ const toResponse = (r: RawResponse): ResponseRow => ({
   durationMs: r.duration_ms,
 });
 
-export function insertResponse(
+export async function insertResponse(
   formId: string,
   data: Omit<ResponseRow, "id" | "submittedAt">,
-): ResponseRow {
+): Promise<ResponseRow> {
   const row: ResponseRow = { ...data, id: uid("r"), submittedAt: Date.now() };
-  db()
-    .prepare(
+  await (await db()).run(
       `INSERT INTO responses (id, form_id, answers, hidden, meta, ending_id, started_at, submitted_at, duration_ms)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    )
-    .run(
       row.id,
       formId,
       JSON.stringify(row.answers),
@@ -220,31 +227,34 @@ export function insertResponse(
       row.startedAt,
       row.submittedAt,
       row.durationMs,
-    );
+  );
   return row;
 }
 
-export function listResponses(formId: string, opts: { limit?: number; offset?: number; since?: number } = {}) {
-  const rows = db()
-    .prepare(
-      `SELECT * FROM responses WHERE form_id = ? AND submitted_at >= ?
-       ORDER BY submitted_at DESC LIMIT ? OFFSET ?`,
-    )
-    .all(formId, opts.since ?? 0, opts.limit ?? 10000, opts.offset ?? 0) as unknown as RawResponse[];
+export async function listResponses(
+  formId: string,
+  opts: { limit?: number; offset?: number; since?: number } = {},
+) {
+  const rows = await (await db()).all<RawResponse>(
+    `SELECT * FROM responses WHERE form_id = ? AND submitted_at >= ?
+     ORDER BY submitted_at DESC LIMIT ? OFFSET ?`,
+    formId,
+    opts.since ?? 0,
+    opts.limit ?? 10000,
+    opts.offset ?? 0,
+  );
   return rows.map(toResponse);
 }
 
-export function countResponses(formId: string): number {
-  return (
-    db().prepare("SELECT COUNT(*) AS n FROM responses WHERE form_id = ?").get(formId) as { n: number }
-  ).n;
+export async function countResponses(formId: string): Promise<number> {
+  const r = await (await db()).get<{ n: number }>("SELECT COUNT(*) AS n FROM responses WHERE form_id = ?", formId);
+  return r?.n ?? 0;
 }
 
-export function deleteResponses(formId: string, ids: string[]) {
-  tx(() => {
-    const stmt = db().prepare("DELETE FROM responses WHERE form_id = ? AND id = ?");
-    for (const id of ids) stmt.run(formId, id);
-  });
+export async function deleteResponses(formId: string, ids: string[]) {
+  await (await db()).batch(
+    ids.map((id) => ["DELETE FROM responses WHERE form_id = ? AND id = ?", [formId, id]]),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -252,40 +262,48 @@ export function deleteResponses(formId: string, ids: string[]) {
 
 export type EventType = "view" | "start" | "reach";
 
-export function recordEvent(formId: string, visitor: string, type: EventType, fieldId = "") {
-  db()
-    .prepare(
-      `INSERT OR IGNORE INTO events (form_id, visitor, type, field_id, created_at) VALUES (?, ?, ?, ?, ?)`,
-    )
-    .run(formId, visitor.slice(0, 64), type, fieldId.slice(0, 64), Date.now());
+export async function recordEvent(formId: string, visitor: string, type: EventType, fieldId = "") {
+  await (await db()).run(
+    `INSERT OR IGNORE INTO events (form_id, visitor, type, field_id, created_at) VALUES (?, ?, ?, ?, ?)`,
+    formId,
+    visitor.slice(0, 64),
+    type,
+    fieldId.slice(0, 64),
+    Date.now(),
+  );
 }
 
-export function formStats(formId: string, since = 0) {
-  const d = db();
-  const count = (type: EventType) =>
+export async function formStats(formId: string, since = 0) {
+  const d = await db();
+  const count = async (type: EventType) =>
     (
-      d
-        .prepare(
-          "SELECT COUNT(*) AS n FROM events WHERE form_id = ? AND type = ? AND created_at >= ?",
-        )
-        .get(formId, type, since) as { n: number }
-    ).n;
-  const reach = d
-    .prepare(
+      await d.get<{ n: number }>(
+        "SELECT COUNT(*) AS n FROM events WHERE form_id = ? AND type = ? AND created_at >= ?",
+        formId,
+        type,
+        since,
+      )
+    )?.n ?? 0;
+  const [views, starts, reach, sub] = await Promise.all([
+    count("view"),
+    count("start"),
+    d.all<{ field_id: string; n: number }>(
       `SELECT field_id, COUNT(*) AS n FROM events WHERE form_id = ? AND type = 'reach' AND created_at >= ?
        GROUP BY field_id`,
-    )
-    .all(formId, since) as { field_id: string; n: number }[];
-  const sub = d
-    .prepare(
+      formId,
+      since,
+    ),
+    d.get<{ n: number; avg: number | null }>(
       `SELECT COUNT(*) AS n, AVG(duration_ms) AS avg FROM responses WHERE form_id = ? AND submitted_at >= ?`,
-    )
-    .get(formId, since) as { n: number; avg: number | null };
+      formId,
+      since,
+    ),
+  ]);
   return {
-    views: count("view"),
-    starts: count("start"),
-    submissions: sub.n,
-    avgDurationMs: sub.avg,
+    views,
+    starts,
+    submissions: sub?.n ?? 0,
+    avgDurationMs: sub?.avg ?? null,
     reach: Object.fromEntries(reach.map((r) => [r.field_id, r.n])) as Record<string, number>,
   };
 }
@@ -293,27 +311,37 @@ export function formStats(formId: string, since = 0) {
 // ---------------------------------------------------------------------------
 // Webhook delivery log
 
-export function logWebhook(formId: string, responseId: string, url: string, status: number | null, error: string | null) {
-  db()
-    .prepare(
-      `INSERT INTO webhook_deliveries (id, form_id, response_id, url, status, error, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    )
-    .run(uid("wh"), formId, responseId, url, status, error, Date.now());
+export async function logWebhook(
+  formId: string,
+  responseId: string,
+  url: string,
+  status: number | null,
+  error: string | null,
+) {
+  await (await db()).run(
+    `INSERT INTO webhook_deliveries (id, form_id, response_id, url, status, error, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    uid("wh"),
+    formId,
+    responseId,
+    url,
+    status,
+    error,
+    Date.now(),
+  );
 }
 
-export function recentWebhooks(formId: string) {
-  return db()
-    .prepare(
-      `SELECT id, response_id AS responseId, url, status, error, created_at AS createdAt
-       FROM webhook_deliveries WHERE form_id = ? ORDER BY created_at DESC LIMIT 10`,
-    )
-    .all(formId) as {
+export async function recentWebhooks(formId: string) {
+  return (await db()).all<{
     id: string;
     responseId: string;
     url: string;
     status: number | null;
     error: string | null;
     createdAt: number;
-  }[];
+  }>(
+    `SELECT id, response_id AS responseId, url, status, error, created_at AS createdAt
+     FROM webhook_deliveries WHERE form_id = ? ORDER BY created_at DESC LIMIT 10`,
+    formId,
+  );
 }

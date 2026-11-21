@@ -1,10 +1,27 @@
 import "server-only";
-import { DatabaseSync } from "node:sqlite";
-import fs from "node:fs";
-import path from "node:path";
 
-const DB_PATH = process.env.DATABASE_PATH ?? path.join(/*turbopackIgnore: true*/ process.cwd(), "data", "formloom.db");
+/**
+ * The database, behind one small async interface so the same queries run on
+ * two backends:
+ *   - SQLite via node:sqlite when self-hosting (Docker, `pnpm start`)
+ *   - Cloudflare D1 on the hosted version (FORMLOOM_RUNTIME=cloudflare)
+ */
+export type Param = string | number | null;
 
+export interface Db {
+  get<T>(sql: string, ...params: Param[]): Promise<T | undefined>;
+  all<T>(sql: string, ...params: Param[]): Promise<T[]>;
+  run(sql: string, ...params: Param[]): Promise<{ changes: number }>;
+  /** Runs the statements atomically. */
+  batch(statements: [sql: string, params: Param[]][]): Promise<void>;
+}
+
+export const onCloudflare = () => process.env.FORMLOOM_RUNTIME === "cloudflare";
+
+/*
+ * Schema history. The same SQL lives in /migrations for `wrangler d1 migrations apply`;
+ * keep the two in step when adding a migration.
+ */
 const MIGRATIONS: string[] = [
   `
   CREATE TABLE users (
@@ -75,9 +92,22 @@ const MIGRATIONS: string[] = [
   `,
 ];
 
-function open(): DatabaseSync {
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  const db = new DatabaseSync(DB_PATH);
+// ---------------------------------------------------------------------------
+// node:sqlite (self-hosted)
+
+type SyncDb = import("node:sqlite").DatabaseSync;
+const g = globalThis as unknown as { __formloomDb?: Promise<SyncDb> };
+
+async function openSqlite(): Promise<SyncDb> {
+  const [{ DatabaseSync }, fs, path] = await Promise.all([
+    import(/* webpackIgnore: true */ "node:sqlite"),
+    import("node:fs"),
+    import("node:path"),
+  ]);
+  const file =
+    process.env.DATABASE_PATH ?? path.join(/*turbopackIgnore: true*/ process.cwd(), "data", "formloom.db");
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const db = new DatabaseSync(file);
   db.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;");
   const row = db.prepare("PRAGMA user_version").get() as { user_version: number };
   for (let v = row.user_version; v < MIGRATIONS.length; v++) {
@@ -94,22 +124,75 @@ function open(): DatabaseSync {
   return db;
 }
 
-const g = globalThis as unknown as { __formloomDb?: DatabaseSync };
-
-export function db(): DatabaseSync {
-  if (!g.__formloomDb) g.__formloomDb = open();
-  return g.__formloomDb;
+function sqliteDb(d: SyncDb): Db {
+  return {
+    async get<T>(sql: string, ...params: Param[]) {
+      return d.prepare(sql).get(...params) as T | undefined;
+    },
+    async all<T>(sql: string, ...params: Param[]) {
+      return d.prepare(sql).all(...params) as T[];
+    },
+    async run(sql: string, ...params: Param[]) {
+      return { changes: Number(d.prepare(sql).run(...params).changes) };
+    },
+    async batch(statements) {
+      d.exec("BEGIN");
+      try {
+        for (const [sql, params] of statements) d.prepare(sql).run(...params);
+        d.exec("COMMIT");
+      } catch (e) {
+        d.exec("ROLLBACK");
+        throw e;
+      }
+    },
+  };
 }
 
-export function tx<T>(fn: () => T): T {
-  const d = db();
-  d.exec("BEGIN");
-  try {
-    const out = fn();
-    d.exec("COMMIT");
-    return out;
-  } catch (e) {
-    d.exec("ROLLBACK");
-    throw e;
-  }
+// ---------------------------------------------------------------------------
+// Cloudflare D1 (hosted)
+
+interface D1Statement {
+  bind(...params: Param[]): D1Statement;
+  first<T>(): Promise<T | null>;
+  all<T>(): Promise<{ results: T[] }>;
+  run(): Promise<{ meta: { changes: number } }>;
+}
+interface D1 {
+  prepare(sql: string): D1Statement;
+  batch(statements: D1Statement[]): Promise<unknown>;
+}
+
+function d1Db(d: D1): Db {
+  return {
+    async get<T>(sql: string, ...params: Param[]) {
+      return (await d.prepare(sql).bind(...params).first<T>()) ?? undefined;
+    },
+    async all<T>(sql: string, ...params: Param[]) {
+      return (await d.prepare(sql).bind(...params).all<T>()).results;
+    },
+    async run(sql: string, ...params: Param[]) {
+      return { changes: (await d.prepare(sql).bind(...params).run()).meta.changes };
+    },
+    async batch(statements) {
+      if (statements.length) await d.batch(statements.map(([sql, params]) => d.prepare(sql).bind(...params)));
+    },
+  };
+}
+
+/** Cloudflare bindings (D1 database, KV for uploads), only on the hosted version. */
+export async function cloudflareEnv(): Promise<{ DB: D1; UPLOADS: CloudflareKV }> {
+  const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+  return (await getCloudflareContext({ async: true })).env as unknown as { DB: D1; UPLOADS: CloudflareKV };
+}
+
+export interface CloudflareKV {
+  get(key: string, type: "arrayBuffer"): Promise<ArrayBuffer | null>;
+  getWithMetadata<M>(key: string, type: "arrayBuffer"): Promise<{ value: ArrayBuffer | null; metadata: M | null }>;
+  put(key: string, value: ArrayBuffer, options?: { metadata?: unknown }): Promise<void>;
+}
+
+export async function db(): Promise<Db> {
+  if (onCloudflare()) return d1Db((await cloudflareEnv()).DB);
+  g.__formloomDb ??= openSqlite();
+  return sqliteDb(await g.__formloomDb);
 }

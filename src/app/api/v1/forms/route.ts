@@ -2,10 +2,10 @@ import { listForms } from "@/lib/forms";
 import { apiUser, unauthorized } from "../_auth";
 
 export async function GET(req: Request) {
-  const user = apiUser(req);
+  const user = await apiUser(req);
   if (!user) return unauthorized();
   return Response.json({
-    data: listForms(user.id).map((f) => ({
+    data: (await listForms(user.id)).map((f) => ({
       id: f.id,
       slug: f.slug,
       title: f.title,

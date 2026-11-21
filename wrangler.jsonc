@@ -1,0 +1,39 @@
+// Cloudflare deployment of the hosted Formloom (Workers + D1 + KV).
+// Self-hosting doesn't need this file: see the Docker section of the README.
+// Forks: create your own D1 database and KV namespace and replace the ids below.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "formloom",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  "vars": {
+    "FORMLOOM_RUNTIME": "cloudflare",
+    "SECURE_COOKIES": "true"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "formloom",
+      "database_id": "9ab5e0e5-92e8-40f0-ae53-2ef528d1abaf",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "UPLOADS",
+      "id": "9a7af2e181e24a7990b1a42fb51a674b"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "formloom"
+    }
+  ]
+}

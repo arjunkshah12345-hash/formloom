@@ -8,7 +8,7 @@ import { appUrl } from "@/lib/url";
 export default async function FormLayout({ children, params }: LayoutProps<"/forms/[id]">) {
   const { id } = await params;
   const user = await requireUser();
-  const form = getForm(id, user.id);
+  const form = await getForm(id, user.id);
   if (!form) notFound();
   return (
     <WorkspaceProvider

@@ -8,9 +8,16 @@ export const metadata = { title: "API & account" };
 
 export default async function AccountPage() {
   const user = await requireUser();
-  const keys = db()
-    .prepare("SELECT id, name, preview, created_at AS createdAt, last_used_at AS lastUsedAt FROM api_keys WHERE user_id = ? ORDER BY created_at DESC")
-    .all(user.id) as { id: string; name: string; preview: string; createdAt: number; lastUsedAt: number | null }[];
+  const keys = await (await db()).all<{
+    id: string;
+    name: string;
+    preview: string;
+    createdAt: number;
+    lastUsedAt: number | null;
+  }>(
+    "SELECT id, name, preview, created_at AS createdAt, last_used_at AS lastUsedAt FROM api_keys WHERE user_id = ? ORDER BY created_at DESC",
+    user.id,
+  );
   return (
     <div className="min-h-dvh">
       <AppHeader user={user} />

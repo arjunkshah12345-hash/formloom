@@ -11,11 +11,11 @@ export default async function ResultsPage({ params, searchParams }: PageProps<"/
   const { id } = await params;
   const sp = await searchParams;
   const user = await requireUser();
-  const form = getForm(id, user.id);
+  const form = await getForm(id, user.id);
   if (!form) notFound();
   const { key, since } = rangeSince(typeof sp.range === "string" ? sp.range : undefined);
-  const responses = listResponses(form.id, { since });
-  const stats = formStats(form.id, since);
+  const responses = await listResponses(form.id, { since });
+  const stats = await formStats(form.id, since);
   const def = form.draft;
   return (
     <ResultsView

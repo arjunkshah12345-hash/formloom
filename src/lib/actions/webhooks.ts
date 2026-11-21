@@ -9,7 +9,7 @@ import { responsePayload } from "@/lib/webhooks";
 /** Send a sample payload to the webhook currently configured in the editor. */
 export async function sendTestWebhook(formId: string, draft: FormDefinition) {
   const user = await requireUser();
-  const form = getForm(formId, user.id);
+  const form = await getForm(formId, user.id);
   if (!form) return { ok: false, error: "Form not found" };
   const def = normalizeDefinition(draft);
   const url = def.settings.webhookUrl;
@@ -49,11 +49,11 @@ export async function sendTestWebhook(formId: string, draft: FormDefinition) {
     headers["x-formloom-signature"] = `sha256=${crypto.createHmac("sha256", def.settings.webhookSecret).update(body).digest("hex")}`;
   try {
     const res = await fetch(url, { method: "POST", headers, body, signal: AbortSignal.timeout(8000) });
-    logWebhook(formId, "r_test", url, res.status, res.ok ? null : `HTTP ${res.status}`);
+    await logWebhook(formId, "r_test", url, res.status, res.ok ? null : `HTTP ${res.status}`);
     return { ok: res.ok, status: res.status, error: res.ok ? undefined : `HTTP ${res.status}` };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Request failed";
-    logWebhook(formId, "r_test", url, null, msg);
+    await logWebhook(formId, "r_test", url, null, msg);
     return { ok: false, error: msg };
   }
 }

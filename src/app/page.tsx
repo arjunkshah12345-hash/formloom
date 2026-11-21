@@ -30,12 +30,10 @@ import { demoForm } from "@/lib/demo";
 import { FIELD_META, FIELD_TYPES } from "@/lib/schema";
 import { REPO_URL } from "@/lib/url";
 
-/** Set by scripts/build-static.sh: the marketing site alone, exported for GitHub Pages. */
-const STATIC_SITE = process.env.STATIC_EXPORT === "1";
 
 export default async function Home() {
-  const user = STATIC_SITE ? null : await getCurrentUser();
-  const cta = STATIC_SITE ? `${REPO_URL}#quick-start` : user ? "/forms" : "/signup";
+  const user = await getCurrentUser();
+  const cta = user ? "/forms" : "/signup";
 
   return (
     <div className="dark min-h-dvh overflow-x-clip bg-paper font-sans text-ink selection:bg-accent selection:text-white">
@@ -74,7 +72,7 @@ export default async function Home() {
             >
               GitHub ↗
             </a>
-            {user || STATIC_SITE ? null : (
+            {user ? null : (
               <Link
                 href="/login"
                 className="rounded-full px-3 py-2 text-ink-3 transition hover:text-ink max-sm:hidden"
@@ -86,7 +84,7 @@ export default async function Home() {
               href={cta}
               className="ml-1 rounded-full bg-ink px-4 py-2 font-medium text-paper transition hover:bg-white"
             >
-              {STATIC_SITE ? "Get started" : user ? "Dashboard" : "Start free"}
+              {user ? "Dashboard" : "Get started"}
             </Link>
           </nav>
         </div>
@@ -544,12 +542,7 @@ export default async function Home() {
           <FooterCol
             title="Account"
             links={
-              STATIC_SITE
-                ? [
-                    ["Quick start", `${REPO_URL}#quick-start`],
-                    ["Docker", `${REPO_URL}#docker`],
-                  ]
-                : user
+              user
                 ? [
                     ["Dashboard", "/forms"],
                     ["API keys", "/account"],

@@ -1,4 +1,4 @@
-name: Deploy site to GitHub Pages
+name: GitHub Pages redirect
 
 on:
   push:
@@ -18,20 +18,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - id: pages
-        uses: actions/configure-pages@v5
-      - name: Build the marketing site
-        run: scripts/build-static.sh
+      # The real site runs on Cloudflare (Workers + D1); this Pages address just forwards to it.
+      - name: Write redirect page
         env:
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
-          REPO_URL: https://github.com/${{ github.repository }}
+          SITE_URL: https://formloom.arjunkshah21.workers.dev
+        run: |
+          mkdir -p out
+          cat > out/index.html <<HTML
+          <!doctype html><meta charset="utf-8"><title>Formloom</title>
+          <meta http-equiv="refresh" content="0; url=$SITE_URL/">
+          <link rel="canonical" href="$SITE_URL/">
+          <script>location.replace("$SITE_URL/" + location.search + location.hash)</script>
+          <p>Formloom has moved to <a href="$SITE_URL/">$SITE_URL</a>.</p>
+          HTML
+          cp out/index.html out/404.html
+          touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

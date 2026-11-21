@@ -43,10 +43,10 @@ export async function deliverWebhook(formId: string, def: FormDefinition, r: Res
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const res = await fetch(url, { method: "POST", headers, body, signal: AbortSignal.timeout(8000) });
-      logWebhook(formId, r.id, url, res.status, res.ok ? null : `HTTP ${res.status}`);
+      await logWebhook(formId, r.id, url, res.status, res.ok ? null : `HTTP ${res.status}`);
       if (res.ok || res.status < 500) return;
     } catch (e) {
-      logWebhook(formId, r.id, url, null, e instanceof Error ? e.message : "Request failed");
+      await logWebhook(formId, r.id, url, null, e instanceof Error ? e.message : "Request failed");
     }
     await new Promise((ok) => setTimeout(ok, 1000 * 2 ** attempt));
   }

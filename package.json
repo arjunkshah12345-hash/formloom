@@ -7,12 +7,17 @@
     "build": "NODE_OPTIONS=--disable-warning=ExperimentalWarning next build",
     "start": "NODE_OPTIONS=--disable-warning=ExperimentalWarning next start",
     "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "cf:build": "FORMLOOM_RUNTIME=cloudflare opennextjs-cloudflare build",
+    "cf:migrate": "wrangler d1 migrations apply formloom --remote",
+    "cf:deploy": "pnpm cf:build && pnpm cf:migrate && opennextjs-cloudflare deploy",
+    "cf:preview": "pnpm cf:build && opennextjs-cloudflare preview"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@opennextjs/cloudflare": "1.20.18",
     "clsx": "^2.1.1",
     "cn": "^0.5.2",
     "lucide-react": "^1.75.0",
@@ -33,7 +38,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "tailwindcss": "4.3.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "4.166.0"
   },
   "packageManager": "pnpm@10.11.1",
   "engines": {

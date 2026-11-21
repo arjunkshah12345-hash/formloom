@@ -8,7 +8,7 @@ export const metadata = { title: "Forms" };
 
 export default async function FormsPage() {
   const user = await requireUser();
-  const forms = listForms(user.id);
+  const forms = await listForms(user.id);
   const templates = TEMPLATES.map(({ key, name, description, build }) => {
     const def = build();
     return { key, name, description, theme: def.theme, sample: def.welcome.enabled ? def.welcome.title : def.fields[0]?.title ?? "" };

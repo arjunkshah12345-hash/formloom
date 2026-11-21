@@ -8,7 +8,7 @@ export const metadata = { title: "Preview" };
 export default async function PreviewPage({ params }: PageProps<"/preview/[id]">) {
   const { id } = await params;
   const user = await requireUser();
-  const form = getForm(id, user.id);
+  const form = await getForm(id, user.id);
   if (!form) notFound();
   return <Player definition={form.draft} mode="preview" />;
 }

@@ -15,7 +15,7 @@ import { TEMPLATES } from "@/lib/templates";
 export type AuthState = { error?: string; email?: string; name?: string } | undefined;
 
 export async function signupsAllowed() {
-  return process.env.ALLOW_SIGNUPS !== "false" || userCount() === 0;
+  return process.env.ALLOW_SIGNUPS !== "false" || await userCount() === 0;
 }
 
 export async function signup(_: AuthState, data: FormData): Promise<AuthState> {
@@ -26,11 +26,11 @@ export async function signup(_: AuthState, data: FormData): Promise<AuthState> {
   if (!name) return { error: "Please tell us your name.", email, name };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Enter a valid email address.", email, name };
   if (password.length < 8) return { error: "Use at least 8 characters for your password.", email, name };
-  if (findUserByEmail(email)) return { error: "An account with this email already exists.", email, name };
+  if (await findUserByEmail(email)) return { error: "An account with this email already exists.", email, name };
 
-  const user = insertUser(email, name, password);
+  const user = await insertUser(email, name, password);
   // Give new accounts something to look at.
-  createForm(user.id, TEMPLATES.find((t) => t.key === "nps")!.build());
+  await createForm(user.id, TEMPLATES.find((t) => t.key === "nps")!.build());
   await createSession(user.id);
   redirect("/forms");
 }
@@ -38,8 +38,8 @@ export async function signup(_: AuthState, data: FormData): Promise<AuthState> {
 export async function login(_: AuthState, data: FormData): Promise<AuthState> {
   const email = String(data.get("email") ?? "").trim();
   const password = String(data.get("password") ?? "");
-  const user = findUserByEmail(email);
-  if (!user || !verifyPassword(password, user.password_hash)) {
+  const user = await findUserByEmail(email);
+  if (!user || !await verifyPassword(password, user.password_hash)) {
     return { error: "That email and password don't match.", email };
   }
   await createSession(user.id);

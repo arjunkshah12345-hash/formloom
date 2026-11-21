@@ -4,6 +4,8 @@
 
 Build beautiful one-question-at-a-time forms with logic jumps, answer recall, themes and real analytics, and keep every response on your own server. One Next.js app, one SQLite file, no external services.
 
+**Try it hosted:** https://formloom.arjunkshah21.workers.dev — make an account, build a form and publish it. Or self-host it below.
+
 ## Features
 
 **Respondent experience**
@@ -56,6 +58,18 @@ docker run -d -p 3000:3000 -v formloom-data:/app/data -e APP_URL=https://forms.e
 ```
 
 Back up the `/app/data` volume (database + uploaded images) and you've backed up everything.
+
+### Cloudflare (Workers + D1)
+
+The hosted version runs on Cloudflare Workers through [OpenNext](https://opennext.js.org/cloudflare), with D1 in place of the SQLite file and Workers KV for uploaded images. To run your own:
+
+```bash
+npx wrangler d1 create formloom                # put the id in wrangler.jsonc
+npx wrangler kv namespace create UPLOADS       # put the id in wrangler.jsonc
+pnpm cf:deploy                                 # build, apply migrations, deploy
+```
+
+Schema changes go in `migrations/` (for D1) and in `MIGRATIONS` in `src/lib/db.ts` (for SQLite).
 
 ### Configuration
 

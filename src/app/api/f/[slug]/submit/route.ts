@@ -6,10 +6,10 @@ import { deliverWebhook } from "@/lib/webhooks";
 
 export async function POST(req: Request, ctx: RouteContext<"/api/f/[slug]/submit">) {
   const { slug } = await ctx.params;
-  const form = getFormBySlug(slug);
+  const form = await getFormBySlug(slug);
   const def = form?.published;
   if (!form || !def) return NextResponse.json({ error: "Form not found" }, { status: 404 });
-  const closed = closedReason(form);
+  const closed = await closedReason(form);
   if (closed) return NextResponse.json({ error: closed }, { status: 403 });
 
   const body = (await req.json().catch(() => null)) as {
@@ -50,7 +50,7 @@ export async function POST(req: Request, ctx: RouteContext<"/api/f/[slug]/submit
       ? body.startedAt
       : null;
   const ua = req.headers.get("user-agent") ?? "";
-  const response = insertResponse(form.id, {
+  const response = await insertResponse(form.id, {
     answers: kept,
     hidden,
     meta: {
