@@ -558,7 +558,11 @@ export default async function Home() {
           <AsciiWordmark text="formloom" />
         </div>
         <div className="flex flex-wrap justify-between gap-3 font-tech text-[10px] tracking-wide text-ink-3 uppercase">
-          <p>© {new Date().getFullYear()} formloom contributors · MIT</p>
+          <p>
+            © {new Date().getFullYear()} formloom contributors · MIT ·{" "}
+            <Link href="/privacy" className="hover:text-ink-2">Privacy</Link> ·{" "}
+            <Link href="/terms" className="hover:text-ink-2">Terms</Link>
+          </p>
           <p>
             Not affiliated with Typeform. NPS® is a trademark of its owners.
           </p>
