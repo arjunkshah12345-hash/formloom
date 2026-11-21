@@ -16,7 +16,7 @@ export default async function AccountPage() {
       <AppHeader user={user} />
       <main className="mx-auto max-w-3xl space-y-6 px-5 py-10">
         <div>
-          <h1 className="font-display text-5xl tracking-tight">Account</h1>
+          <h1 className="font-heading text-5xl font-medium tracking-[-0.04em]">Account</h1>
           <p className="mt-2 text-sm text-ink-2">
             Signed in as <b className="font-medium text-ink">{user.name}</b> · {user.email}
           </p>

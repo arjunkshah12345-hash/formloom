@@ -90,7 +90,7 @@ function EmptyState({ formId, isPublished }: { formId: string; isPublished: bool
   return (
     <div className="mt-10 rounded-2xl border border-dashed border-line-2 px-6 py-20 text-center">
       <Inbox className="mx-auto size-8 text-ink-3" />
-      <p className="mt-4 font-display text-3xl">No responses yet</p>
+      <p className="mt-4 font-heading text-3xl font-medium tracking-[-0.03em]">No responses yet</p>
       <p className="mt-2 text-sm text-ink-2">
         {isPublished ? "Share your form to start collecting answers." : "Publish your form, then share the link."}
       </p>
@@ -139,7 +139,7 @@ function Summary({ def, stats, summary }: { def: FormDefinition; stats: Stats; s
                 </span>
                 <span className="h-6 overflow-hidden rounded-md bg-paper">
                   <motion.span
-                    className="block h-full rounded-md bg-ink/85"
+                    className="block h-full rounded-md bg-accent/85"
                     initial={{ width: 0 }}
                     animate={{ width: `${(n / top) * 100}%` }}
                     transition={{ duration: 0.6, delay: i * 0.03, ease: [0.22, 1, 0.36, 1] }}
@@ -253,20 +253,20 @@ function SummaryCard({ s, index, def }: { s: FieldSummary; index: number; def: F
             <div className="mb-5 flex flex-wrap items-end gap-6">
               <div>
                 <p className="text-xs text-ink-3">NPS</p>
-                <p className={`text-5xl font-semibold tracking-tight tabular-nums ${(s.nps?.score ?? 0) >= 0 ? "text-emerald-700" : "text-red-600"}`}>
+                <p className={`text-5xl font-semibold tracking-tight tabular-nums ${(s.nps?.score ?? 0) >= 0 ? "text-emerald-400" : "text-red-400"}`}>
                   {s.nps ? (s.nps.score > 0 ? `+${s.nps.score}` : s.nps.score) : "—"}
                 </p>
               </div>
               {s.nps ? (
                 <div className="flex gap-4 text-sm">
                   <span>
-                    <b className="text-emerald-700">{pct(s.nps.promoters, s.answered)}</b> <span className="text-ink-3">promoters</span>
+                    <b className="text-emerald-400">{pct(s.nps.promoters, s.answered)}</b> <span className="text-ink-3">promoters</span>
                   </span>
                   <span>
                     <b className="text-ink-2">{pct(s.nps.passives, s.answered)}</b> <span className="text-ink-3">passives</span>
                   </span>
                   <span>
-                    <b className="text-red-600">{pct(s.nps.detractors, s.answered)}</b> <span className="text-ink-3">detractors</span>
+                    <b className="text-red-400">{pct(s.nps.detractors, s.answered)}</b> <span className="text-ink-3">detractors</span>
                   </span>
                 </div>
               ) : null}
@@ -416,7 +416,7 @@ function ResponsesTable({ formId, def, responses }: { formId: string; def: FormD
         {open ? (
           <>
             <motion.div
-              className="fixed inset-0 z-40 bg-ink/20"
+              className="fixed inset-0 z-40 bg-black/50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -444,7 +444,7 @@ function ResponsesTable({ formId, def, responses }: { formId: string; def: FormD
                   </p>
                 </div>
                 <div className="flex gap-1">
-                  <button className="btn-ghost size-8 p-0 text-red-600" onClick={() => del([open.id])} disabled={pending} aria-label="Delete">
+                  <button className="btn-ghost size-8 p-0 text-red-400" onClick={() => del([open.id])} disabled={pending} aria-label="Delete">
                     <Trash2 className="size-4" />
                   </button>
                   <button className="btn-ghost size-8 p-0" onClick={() => setOpen(null)} aria-label="Close">

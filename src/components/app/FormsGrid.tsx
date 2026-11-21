@@ -62,7 +62,7 @@ export function FormsGrid({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-ink-3">{greeting} 👋</p>
-          <h1 className="mt-1 font-display text-5xl tracking-tight">Your forms</h1>
+          <h1 className="mt-1 font-heading text-5xl font-medium tracking-[-0.04em]">Your forms</h1>
           <p className="mt-2 text-sm text-ink-2">
             {forms.length} form{forms.length === 1 ? "" : "s"} · {totalResponses.toLocaleString()} response
             {totalResponses === 1 ? "" : "s"} collected
@@ -94,7 +94,7 @@ export function FormsGrid({
 
       {forms.length === 0 ? (
         <div className="mt-10 rounded-2xl border border-dashed border-line-2 bg-surface/50 px-6 py-16 text-center">
-          <p className="font-display text-3xl">Nothing here yet</p>
+          <p className="font-heading text-3xl font-medium tracking-[-0.03em]">Nothing here yet</p>
           <p className="mt-2 text-sm text-ink-2">Start from a template or a blank canvas — it takes seconds.</p>
           <button className="btn-primary mt-6" onClick={() => setNewOpen(true)}>
             <Plus className="size-4" /> Create your first form
@@ -265,12 +265,12 @@ export function FormsGrid({
 
 function StatusBadge({ form }: { form: FormListItem }) {
   if (!form.isPublished)
-    return <span className="rounded-full bg-black/[0.06] px-2 py-0.5 font-medium text-ink-2">Draft</span>;
+    return <span className="rounded-full bg-ink/[0.08] px-2 py-0.5 font-medium text-ink-2">Draft</span>;
   if (form.isClosed)
-    return <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">Closed</span>;
+    return <span className="rounded-full bg-amber-500/15 px-2 py-0.5 font-medium text-amber-300">Closed</span>;
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
-      <span className="size-1.5 rounded-full bg-emerald-500" />
+    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/12 px-2 py-0.5 font-medium text-emerald-400">
+      <span className="size-1.5 rounded-full bg-emerald-500/120" />
       Live{form.hasChanges ? " · edits" : ""}
     </span>
   );

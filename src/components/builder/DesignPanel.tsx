@@ -81,7 +81,7 @@ export function DesignPanel() {
           <div key={key} className="flex items-center justify-between gap-3">
             <span className="text-sm">{label}</span>
             <label className="flex items-center gap-2 rounded-lg border border-line-2 bg-surface py-1 pr-2 pl-1">
-              <span className="relative size-6 overflow-hidden rounded-md ring-1 ring-black/10" style={{ background: String(theme[key]) }}>
+              <span className="relative size-6 overflow-hidden rounded-md ring-1 ring-white/15" style={{ background: String(theme[key]) }}>
                 <input
                   type="color"
                   className="absolute inset-0 size-full cursor-pointer opacity-0"
@@ -117,7 +117,7 @@ export function DesignPanel() {
         title="Background image"
         aside={
           theme.backgroundImage ? (
-            <button className="btn-ghost h-6 px-1.5 text-xs text-red-600" onClick={() => set({ backgroundImage: undefined }, "bg")}>
+            <button className="btn-ghost h-6 px-1.5 text-xs text-red-400" onClick={() => set({ backgroundImage: undefined }, "bg")}>
               <Trash2 className="size-3.5" /> Remove
             </button>
           ) : null

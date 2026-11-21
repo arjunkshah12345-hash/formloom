@@ -12,9 +12,9 @@ export function LogoMark({ className = "size-6" }: { className?: string }) {
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-2 text-[15px] font-semibold tracking-tight ${className}`}>
+    <span className={`inline-flex items-center gap-2 text-[15px] font-medium tracking-tight ${className}`}>
       <LogoMark />
-      Formloom
+      <span className="font-heading">formloom</span>
     </span>
   );
 }

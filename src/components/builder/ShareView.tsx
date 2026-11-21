@@ -43,7 +43,7 @@ export function ShareView() {
           <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-accent-soft text-accent">
             <Rocket className="size-6" />
           </div>
-          <h1 className="mt-5 font-display text-4xl tracking-tight">Publish to share</h1>
+          <h1 className="mt-5 font-heading text-4xl font-medium tracking-[-0.04em]">Publish to share</h1>
           <p className="mt-2 text-ink-2">Once published, your form gets a public link, an embed code and a QR code.</p>
           <button
             className="btn-accent mt-6 h-10 px-5"
@@ -67,7 +67,7 @@ export function ShareView() {
       <div className="mx-auto max-w-4xl space-y-5 px-5 py-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h1 className="font-display text-4xl tracking-tight">Share</h1>
+            <h1 className="font-heading text-4xl font-medium tracking-[-0.04em]">Share</h1>
             <p className="mt-1 text-sm text-ink-3">
               {ws.hasUnpublished ? "You have unpublished edits — publish to update the live form." : "Your form is live."}
             </p>
@@ -162,11 +162,11 @@ export function ShareView() {
                 </div>
               ) : null}
               <div className="relative">
-                <pre className="max-h-64 overflow-auto rounded-xl bg-ink p-4 pr-12 font-mono text-[12px] leading-relaxed whitespace-pre-wrap break-all text-paper/90">
+                <pre className="max-h-64 overflow-auto rounded-xl border border-line bg-black/50 p-4 pr-12 font-mono text-[12px] leading-relaxed whitespace-pre-wrap break-all text-ink-2">
                   {snippet}
                 </pre>
                 <button
-                  className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-md bg-white/10 text-paper hover:bg-white/20"
+                  className="absolute top-2 right-2 flex size-8 items-center justify-center rounded-md bg-white/10 text-ink hover:bg-white/20"
                   onClick={() => {
                     copy(snippet, "Embed code copied");
                     setCopied(true);

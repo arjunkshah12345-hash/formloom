@@ -49,7 +49,7 @@ export function SettingsView({
     <div className="h-full overflow-y-auto">
       <div className="mx-auto max-w-2xl space-y-5 px-5 py-10">
         <div>
-          <h1 className="font-display text-4xl tracking-tight">Settings</h1>
+          <h1 className="font-heading text-4xl font-medium tracking-[-0.04em]">Settings</h1>
           <p className="mt-1 text-sm text-ink-3">Changes save automatically. Publish to apply them to the live form.</p>
         </div>
 
@@ -174,7 +174,7 @@ export function SettingsView({
               <p className="border-b border-line px-3 py-2 text-xs font-medium text-ink-3">Recent deliveries</p>
               {deliveries.map((d) => (
                 <div key={d.id} className="flex items-center justify-between px-3 py-2 text-xs not-last:border-b not-last:border-line">
-                  <span className={`font-mono ${d.status && d.status < 300 ? "text-emerald-700" : "text-red-600"}`}>
+                  <span className={`font-mono ${d.status && d.status < 300 ? "text-emerald-400" : "text-red-400"}`}>
                     {d.status ?? "ERR"} {d.error && !d.status ? `· ${d.error}` : ""}
                   </span>
                   <span className="text-ink-3">{new Date(d.createdAt).toLocaleString()}</span>

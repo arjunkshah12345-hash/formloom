@@ -39,10 +39,10 @@ export function ApiKeys({ keys, baseUrl }: { keys: Key[]; baseUrl: string }) {
           </button>
         </form>
         {token ? (
-          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
             <p className="text-sm font-medium text-amber-900">Copy your new key now — you won&apos;t see it again.</p>
             <div className="mt-2 flex gap-2">
-              <code className="flex-1 truncate rounded-md bg-white px-3 py-2 font-mono text-xs">{token}</code>
+              <code className="flex-1 truncate rounded-md bg-paper px-3 py-2 font-mono text-xs">{token}</code>
               <button className="btn-outline" onClick={() => copy(token, "Key copied")}>
                 <Copy className="size-4" />
               </button>
@@ -59,7 +59,7 @@ export function ApiKeys({ keys, baseUrl }: { keys: Key[]; baseUrl: string }) {
                     <span className="font-mono">{k.preview}</span> · created {timeAgo(k.createdAt)} · last used {timeAgo(k.lastUsedAt)}
                   </p>
                 </div>
-                <button className="btn-ghost text-red-600" onClick={() => start(() => revokeApiKey(k.id))} disabled={pending}>
+                <button className="btn-ghost text-red-400" onClick={() => start(() => revokeApiKey(k.id))} disabled={pending}>
                   <Trash2 className="size-4" /> Revoke
                 </button>
               </li>
@@ -77,13 +77,13 @@ export function ApiKeys({ keys, baseUrl }: { keys: Key[]; baseUrl: string }) {
             ["GET", "/api/v1/forms/:id/responses", "Responses · ?limit=100&offset=0&since=<ms>"],
           ].map(([m, p, d]) => (
             <div key={p} className="flex flex-wrap items-center gap-3">
-              <span className="rounded bg-emerald-50 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700">{m}</span>
+              <span className="rounded bg-emerald-500/12 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-400">{m}</span>
               <code className="font-mono text-[13px]">{p}</code>
               <span className="text-ink-3">{d}</span>
             </div>
           ))}
         </div>
-        <pre className="mt-5 overflow-x-auto rounded-xl bg-ink p-4 font-mono text-xs leading-relaxed text-paper/90">{example}</pre>
+        <pre className="mt-5 overflow-x-auto rounded-xl border border-line bg-black/50 p-4 font-mono text-xs leading-relaxed text-ink-2">{example}</pre>
       </section>
     </>
   );

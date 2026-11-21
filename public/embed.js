@@ -1,4 +1,4 @@
-/*! Formloom embed — https://github.com/ · MIT */
+/*! Formloom embed · MIT */
 (function () {
   if (window.__formloomEmbed) return;
   window.__formloomEmbed = true;

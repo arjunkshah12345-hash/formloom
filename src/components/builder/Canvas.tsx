@@ -121,7 +121,7 @@ export function Canvas({ selection }: { selection: Selection }) {
       </div>
       <div className="flex min-h-0 flex-1 items-stretch justify-center px-6 pb-6">
         <div
-          className={`relative overflow-hidden shadow-[0_20px_50px_-20px_rgba(0,0,0,.35)] ring-1 ring-black/5 transition-all duration-300 ${
+          className={`relative overflow-hidden shadow-[0_20px_50px_-20px_rgba(0,0,0,.35)] ring-1 ring-white/10 transition-all duration-300 ${
             device === "mobile" ? "w-[390px] max-w-full rounded-[28px]" : "w-full max-w-[1100px] rounded-xl"
           }`}
         >
@@ -359,7 +359,7 @@ function ChoiceListEditor({ field, onChange }: { field: Field; onChange: (c: Cho
       {field.type === "dropdown" ? (
         <p className="fl-hint -mt-1 font-sans">Respondents type to filter these options.</p>
       ) : null}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <DndContext id="canvas-choices" sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={choices.map((c) => c.id)} strategy={verticalListSortingStrategy}>
           {choices.map((c, i) => (
             <SortableChoice key={c.id} id={c.id}>
@@ -454,7 +454,7 @@ function PictureChoiceEditor({ field, onChange }: { field: Field; onChange: (c: 
   };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+    <DndContext id="canvas-list" sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
       <SortableContext items={choices.map((c) => c.id)} strategy={rectSortingStrategy}>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3" style={{ maxWidth: 640 }}>
           {choices.map((c, i) => (

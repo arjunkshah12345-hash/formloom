@@ -42,3 +42,9 @@ next-env.d.ts
 
 # Formloom data (SQLite database + uploads)
 /data
+
+# static export
+/.static-stash/
+/data/
+.env*
+!.env.example

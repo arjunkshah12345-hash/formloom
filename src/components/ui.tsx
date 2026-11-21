@@ -37,7 +37,7 @@ export function Dialog({
       {open ? (
         <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
           <motion.div
-            className="fixed inset-0 bg-ink/40 backdrop-blur-[2px]"
+            className="fixed inset-0 bg-black/60 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -128,7 +128,7 @@ export function MenuItem({
       type="button"
       onClick={onClick}
       className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-sm transition hover:bg-paper ${
-        danger ? "text-red-600" : "text-ink"
+        danger ? "text-red-400" : "text-ink"
       }`}
     >
       {icon ? <span className="text-ink-3 [&>svg]:size-4">{icon}</span> : null}
@@ -161,7 +161,7 @@ export function Toggle({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition ${checked ? "bg-ink" : "bg-line-2"}`}
+        className={`relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition ${checked ? "bg-accent" : "bg-line-2"}`}
       >
         <span
           className={`absolute top-0.5 left-0.5 size-4 rounded-full bg-white shadow transition-transform ${
@@ -197,7 +197,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 6 }}
               className={`rounded-full px-4 py-2 text-sm shadow-lg ${
-                t.tone === "error" ? "bg-red-600 text-white" : "bg-ink text-paper"
+                t.tone === "error" ? "bg-red-600 text-white" : "border border-line-2 bg-surface text-ink"
               }`}
             >
               {t.message}
@@ -223,7 +223,7 @@ export function Segmented<T extends string>({
   size?: "sm" | "md";
 }) {
   return (
-    <div className="inline-flex rounded-lg bg-black/[0.05] p-0.5">
+    <div className="inline-flex rounded-lg bg-ink/[0.07] p-0.5">
       {options.map((o) => (
         <button
           key={o.value}

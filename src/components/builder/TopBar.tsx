@@ -38,7 +38,7 @@ export function TopBar() {
         </Link>
         <LogoMark className="size-6 shrink-0 max-sm:hidden" />
         <input
-          className="h-8 min-w-0 max-w-64 flex-1 truncate rounded-md bg-transparent px-2 text-sm font-medium outline-none hover:bg-black/[0.04] focus:bg-black/[0.04]"
+          className="h-8 min-w-0 max-w-64 flex-1 truncate rounded-md bg-transparent px-2 text-sm font-medium outline-none hover:bg-ink/[0.06] focus:bg-ink/[0.06]"
           value={ws.def.title}
           onChange={(e) => ws.update((d) => ({ ...d, title: e.target.value }), { coalesce: "title" })}
           aria-label="Form title"
@@ -46,7 +46,7 @@ export function TopBar() {
         <SaveIndicator />
       </div>
 
-      <nav className="flex items-center gap-0.5 rounded-lg bg-black/[0.04] p-0.5">
+      <nav className="flex items-center gap-0.5 rounded-lg bg-ink/[0.06] p-0.5">
         {TABS.map((t) => (
           <Link
             key={t.href}
@@ -89,7 +89,7 @@ export function TopBar() {
         </a>
         {ws.isPublished && !ws.hasUnpublished ? (
           <Link href={`/forms/${ws.formId}/share`} className="btn-outline text-ok">
-            <span className="size-2 rounded-full bg-emerald-500" />
+            <span className="size-2 rounded-full bg-emerald-500/120" />
             <span className="max-md:hidden">Live</span>
           </Link>
         ) : (
@@ -112,7 +112,7 @@ function SaveIndicator() {
           <Loader2 className="size-3 animate-spin" /> Saving
         </>
       ) : saveState === "error" ? (
-        <span className="inline-flex items-center gap-1 text-red-600">
+        <span className="inline-flex items-center gap-1 text-red-400">
           <CloudOff className="size-3" /> Not saved
         </span>
       ) : (

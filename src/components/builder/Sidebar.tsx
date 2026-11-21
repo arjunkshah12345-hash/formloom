@@ -65,7 +65,7 @@ export function Sidebar({ selection, select }: { selection: Selection; select: (
           active={selection.kind === "welcome"}
           onClick={() => select({ kind: "welcome" })}
           icon={
-            <span className="inline-flex size-7 items-center justify-center rounded-md bg-black/[0.05] text-ink-2">
+            <span className="inline-flex size-7 items-center justify-center rounded-md bg-ink/[0.07] text-ink-2">
               <Hand className="size-4" />
             </span>
           }
@@ -76,7 +76,7 @@ export function Sidebar({ selection, select }: { selection: Selection; select: (
 
         <div className="mt-2 mb-1 h-px bg-line" />
 
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <DndContext id="sidebar-fields" sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
           <SortableContext items={def.fields.map((f) => f.id)} strategy={verticalListSortingStrategy}>
             {def.fields.map((f) => (
               <SortableField
@@ -130,7 +130,7 @@ export function Sidebar({ selection, select }: { selection: Selection; select: (
             active={selection.kind === "ending" && selection.id === e.id}
             onClick={() => select({ kind: "ending", id: e.id })}
             icon={
-              <span className="inline-flex size-7 items-center justify-center rounded-md bg-emerald-50 text-emerald-600">
+              <span className="inline-flex size-7 items-center justify-center rounded-md bg-emerald-500/12 text-emerald-400">
                 <Flag className="size-4" />
               </span>
             }
@@ -141,7 +141,7 @@ export function Sidebar({ selection, select }: { selection: Selection; select: (
                 <Menu
                   trigger={({ onClick }) => (
                     <button
-                      className="rounded p-1 text-ink-3 opacity-0 group-hover:opacity-100 hover:bg-black/5 hover:text-ink"
+                      className="rounded p-1 text-ink-3 opacity-0 group-hover:opacity-100 hover:bg-ink/[0.07] hover:text-ink"
                       onClick={(ev) => {
                         ev.stopPropagation();
                         onClick();
@@ -266,7 +266,7 @@ function SortableField({
       <Menu
         trigger={({ onClick }) => (
           <button
-            className="rounded p-1 text-ink-3 opacity-0 group-hover:opacity-100 hover:bg-black/5 hover:text-ink"
+            className="rounded p-1 text-ink-3 opacity-0 group-hover:opacity-100 hover:bg-ink/[0.07] hover:text-ink"
             onClick={(e) => {
               e.stopPropagation();
               onClick();

@@ -209,7 +209,7 @@ export function LogicPanel({ selection }: { selection: Selection }) {
             <div>
               <label className="label mt-1">Then jump to</label>
               {targetSelect(rule.to, (to) => setRule(rule.id, (r) => ({ ...r, to })), false)}
-              {!rule.to ? <p className="mt-1 text-[11px] text-amber-700">Pick a destination or this rule is skipped.</p> : null}
+              {!rule.to ? <p className="mt-1 text-[11px] text-amber-300">Pick a destination or this rule is skipped.</p> : null}
             </div>
           </div>
         </div>

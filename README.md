@@ -126,3 +126,14 @@ curl https://forms.example.com/api/v1/forms -H "Authorization: Bearer fl_…"
 ## License
 
 MIT
+
+## Credits
+
+The marketing site and auth screens use components copied in from these registries (the source lives in this repo, no runtime package):
+
+- [dithercn](https://dithercn.dev) (MIT): `src/components/dithercn`, `src/lib/dither`: dithered text, fades, charts and the globe.
+- [asciicn](https://asciicn.sumak.dev): `src/components/ascii`, `src/lib/ascii`: ASCII wordmark, scramble text and backgrounds.
+- [gradients.sh](https://gradients.sh) free components (MIT): `src/components/gradients`, `src/lib/gradient-engine`: WebGPU/WebGL aurora, grain and border gradients.
+- [hmm.css](https://github.com/arjunkshah12345-hash/hmm.css): `src/styles/hmm.min.css`: rolling words, shimmer, dots and carets.
+
+Type is set in [Funnel Display](https://fonts.google.com/specimen/Funnel+Display), [Geist](https://vercel.com/font) and [Martian Mono](https://fonts.google.com/specimen/Martian+Mono).

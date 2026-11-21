@@ -403,7 +403,7 @@ export function AttachmentEditor({
       title="Image"
       aside={
         value?.url ? (
-          <button className="btn-ghost h-6 px-1.5 text-xs text-red-600" onClick={() => onChange(undefined)}>
+          <button className="btn-ghost h-6 px-1.5 text-xs text-red-400" onClick={() => onChange(undefined)}>
             <Trash2 className="size-3.5" /> Remove
           </button>
         ) : null

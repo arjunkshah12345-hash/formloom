@@ -8,3 +8,6 @@ export async function appUrl() {
   const proto = h.get("x-forwarded-proto") ?? (/^(localhost|127\.)/.test(host) ? "http" : "https");
   return `${proto}://${host}`;
 }
+
+/** Where the source lives; override for forks. */
+export const REPO_URL = (process.env.REPO_URL ?? "https://github.com/arjunkshah12345-hash/formloom").replace(/\/$/, "");
