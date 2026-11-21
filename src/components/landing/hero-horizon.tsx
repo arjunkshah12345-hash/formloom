@@ -76,7 +76,7 @@ export function HeroHorizon({ cta, repo }: { cta: string; repo: string }) {
           className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pr-2.5 pl-1 text-[12.5px] text-ink-3 transition hover:text-ink-2"
         >
           <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium text-accent">New</span>
-          8 themes and 16 question types
+          9 themes and 16 question types
           <ChevronRight className="size-3.5 transition group-hover:translate-x-0.5" />
         </a>
 

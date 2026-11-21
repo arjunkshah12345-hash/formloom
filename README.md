@@ -21,7 +21,7 @@ Build beautiful one-question-at-a-time forms with logic jumps, answer recall, th
 - Answer recall (`{{field:…}}`) and hidden fields from the URL (`?source=newsletter`)
 - Welcome screen, multiple endings, ending buttons and redirects
 - Images per screen: stacked, split left/right, or wallpaper
-- Themes: 8 presets, 12 Google Fonts, custom colors, background image with overlay, corner styles, alignment
+- Themes: 9 presets, 12 Google Fonts, custom colors, background image with overlay, corner styles, alignment
 - Autosave, undo/redo (`⌘Z` / `⌘⇧Z`), draft vs. published versions, preview mode
 - Import/export forms as JSON; 7 starter templates
 

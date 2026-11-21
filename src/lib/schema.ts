@@ -288,6 +288,17 @@ export const THEME_PRESETS: Record<string, Theme & { name: string }> = {
     radius: "small",
     align: "left",
   },
+  paperDark: {
+    name: "Paper Dark",
+    font: "Inter",
+    background: "#0b0b0a",
+    question: "#efeee9",
+    answer: "#ff5b2e",
+    button: "#ff5b2e",
+    buttonText: "#ffffff",
+    radius: "pill",
+    align: "left",
+  },
   midnight: {
     name: "Midnight",
     font: "Space Grotesk",

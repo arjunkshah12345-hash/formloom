@@ -28,7 +28,7 @@ export function demoForm(): FormDefinition {
         buttonUrl: "/signup",
       },
     ],
-    theme: { ...presetTheme("forest") },
+    theme: { ...presetTheme("paperDark") },
     settings: { ...defaultSettings(), showBranding: false },
   };
 }

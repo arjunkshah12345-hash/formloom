@@ -124,7 +124,7 @@ export default async function Home() {
         <div className="mx-auto grid max-w-[1240px] grid-cols-2 md:grid-cols-4">
           {[
             ["16", "question types"],
-            ["08", "themes · 12 fonts"],
+            ["09", "themes · 12 fonts"],
             ["01", "sqlite file to back up"],
             ["00", "trackers, ever"],
           ].map(([n, l], i) => (

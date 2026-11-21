@@ -79,7 +79,7 @@ const STEPS = [
   },
   {
     t: "Theme & publish",
-    b: "Eight presets, twelve fonts, your own colours and background image. Edits stay in draft until you publish again.",
+    b: "Nine presets, twelve fonts, your own colours and background image. Edits stay in draft until you publish again.",
     k: "/f/slug",
   },
   {
@@ -146,7 +146,7 @@ export function ThemeShowcase({ n }: { n: string }) {
             </p>
           </div>
         </Reveal>
-        <div className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Object.entries(THEME_PRESETS).map(([key, t], i) => (
             <Reveal key={key} delay={(i % 4) * 0.05}>
               <figure
