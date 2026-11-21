@@ -86,7 +86,7 @@ export default async function Home() {
               href={cta}
               className="ml-1 rounded-full bg-ink px-4 py-2 font-medium text-paper transition hover:bg-white"
             >
-              {STATIC_SITE ? "Self-host" : user ? "Dashboard" : "Start free"}
+              {STATIC_SITE ? "Get started" : user ? "Dashboard" : "Start free"}
             </Link>
           </nav>
         </div>
