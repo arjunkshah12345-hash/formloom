@@ -1,7 +1,7 @@
 import { Check, Server } from "lucide-react";
 import { openBillingPortal, startCheckout } from "@/lib/actions/billing";
 import type { Plan } from "@/lib/billing";
-import { dollars, FREE_MONTHLY_RESPONSES, PLAN_FEATURES, PRO_PRICE } from "@/lib/plans";
+import { dollars, FREE_MONTHLY_RESPONSES, LAUNCH_CODE, LIFETIME_PRICE, PLAN_FEATURES, PRO_PRICE } from "@/lib/plans";
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 const date = (ms: number) => new Date(ms).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
@@ -31,6 +31,31 @@ export function PlanCard({
     );
   }
 
+  if (plan.kind === "pro" && plan.interval === "lifetime") {
+    return (
+      <section id="plan" className="card scroll-mt-24 p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="flex items-center gap-2 font-medium">
+              Formloom Pro
+              <span className="rounded-full bg-accent/15 px-2 py-0.5 font-tech text-[10px] tracking-wide text-accent uppercase">
+                Lifetime
+              </span>
+            </h2>
+            <p className="mt-1 text-sm text-ink-3">
+              {justUpgraded ? "Thanks for backing Formloom. " : ""}
+              Paid once: unlimited responses and no badge, for good. Nothing renews.
+            </p>
+            <p className="mt-3 text-sm text-ink-2">{fmt(usage.used)} responses this month</p>
+          </div>
+          <form action={openBillingPortal}>
+            <button className="btn-outline">Receipts</button>
+          </form>
+        </div>
+      </section>
+    );
+  }
+
   if (plan.kind === "pro") {
     const ending = plan.cancelAtPeriodEnd;
     return (
@@ -54,9 +79,15 @@ export function PlanCard({
             </p>
             <p className="mt-3 text-sm text-ink-2">{fmt(usage.used)} responses this month</p>
           </div>
-          <form action={openBillingPortal}>
-            <button className="btn-outline">Manage billing</button>
-          </form>
+          <div className="flex flex-col gap-2">
+            <form action={openBillingPortal}>
+              <button className="btn-outline w-full">Manage billing</button>
+            </form>
+            <form action={startCheckout}>
+              <input type="hidden" name="interval" value="lifetime" />
+              <button className="btn-ghost w-full text-sm">Switch to Lifetime, {dollars(LIFETIME_PRICE)} once</button>
+            </form>
+          </div>
         </div>
       </section>
     );
@@ -107,6 +138,23 @@ export function PlanCard({
             <button className="btn-outline w-full">{dollars(PRO_PRICE.month)}/month</button>
           </form>
         </div>
+      </div>
+      <p className="mt-3 text-xs text-ink-3">
+        Launch offer: code <span className="font-tech text-ink-2">{LAUNCH_CODE}</span> takes half off your first Pro
+        payment.
+      </p>
+
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-line-2 p-5">
+        <div>
+          <p className="font-medium">
+            Lifetime · {dollars(LIFETIME_PRICE)} <span className="text-sm font-normal text-ink-3">once</span>
+          </p>
+          <p className="text-sm text-ink-3">Hate subscriptions? Pay once and keep Pro for good. Nothing renews.</p>
+        </div>
+        <form action={startCheckout}>
+          <input type="hidden" name="interval" value="lifetime" />
+          <button className="btn-outline">Buy Lifetime</button>
+        </form>
       </div>
     </section>
   );

@@ -13,7 +13,7 @@ export default async function AccountPage({ searchParams }: PageProps<"/account"
   const justUpgraded = (await searchParams).upgraded === "1";
   let plan = await getPlan(user.id);
   // Back from Checkout before Stripe's webhook landed: ask Stripe directly.
-  if (justUpgraded && plan.kind === "free") {
+  if (justUpgraded && (plan.kind === "free" || (plan.kind === "pro" && plan.interval !== "lifetime"))) {
     await syncFromStripe(user.id).catch(() => {});
     plan = await getPlan(user.id);
   }

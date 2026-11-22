@@ -26,6 +26,7 @@ import {
 import { HeroHorizon } from "@/components/landing/hero-horizon";
 import { ThemedDemo } from "@/components/landing/ThemedDemo";
 import { getCurrentUser } from "@/lib/auth";
+import { COMPETITOR_PRICES, dollars, LAUNCH_CODE, LIFETIME_PRICE, PRO_PRICE } from "@/lib/plans";
 import { demoForm } from "@/lib/demo";
 import { FIELD_META, FIELD_TYPES } from "@/lib/schema";
 import { appUrl, REPO_URL } from "@/lib/url";
@@ -392,9 +393,8 @@ export default async function Home() {
           <div className="mt-5 flex flex-wrap items-end justify-between gap-6">
             <H2 className="max-w-[10ch]">Pay less. Or pay nothing.</H2>
             <p className="max-w-[44ch] text-lg leading-relaxed text-ink-2">
-              The hosted version has a generous free plan and one flat Pro price. Self-hosted Formloom has
-              every feature, free, forever. Paid form builders typically start around $25 a month for 100
-              responses.
+              The hosted version has a generous free plan and one flat Pro price, the lowest of any form builder
+              we know of. Self-hosted Formloom has every feature, free, forever.
             </p>
           </div>
         </Reveal>
@@ -446,7 +446,57 @@ export default async function Home() {
             </Reveal>
           ))}
         </div>
-        <p className="mt-6 text-center text-sm text-ink-3">
+        <Reveal>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-dashed border-line-2 px-7 py-5">
+            <p className="text-[15px] text-ink-2">
+              <span className="font-medium text-ink">Hate subscriptions?</span> Get Pro for life for{" "}
+              {dollars(LIFETIME_PRICE)}, paid once. Launching now: code{" "}
+              <span className="font-tech text-accent">{LAUNCH_CODE}</span> takes half off your first Pro payment.
+            </p>
+            <Link
+              href={user ? "/account#plan" : "/signup"}
+              className="inline-flex h-10 items-center rounded-full border border-line-2 px-5 text-sm transition hover:border-ink-3"
+            >
+              {user ? "See plans" : "Start free"}
+            </Link>
+          </div>
+        </Reveal>
+
+        <Reveal>
+          <div className="mt-16 grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+            <div>
+              <p className="font-tech text-[11px] tracking-[0.12em] text-ink-3 uppercase">The same thing, elsewhere</p>
+              <p className="mt-3 font-heading text-3xl font-medium tracking-tight">
+                Up to {Math.round(COMPETITOR_PRICES.at(-1)!.from / (PRO_PRICE.year / 1200))}× cheaper than the
+                form builders you know.
+              </p>
+              <p className="mt-3 text-sm text-ink-3">
+                Cheapest paid plan of each, per month at its lowest advertised price, checked November 2026. Most
+                also cap responses and charge per seat. Formloom Pro has neither.
+              </p>
+            </div>
+            <ul className="space-y-2.5">
+              {[{ name: "Formloom Pro", from: PRO_PRICE.year / 1200 }, ...COMPETITOR_PRICES].map((c, i) => {
+                const max = COMPETITOR_PRICES.at(-1)!.from;
+                const us = i === 0;
+                return (
+                  <li key={c.name} className="grid grid-cols-[7.5rem_1fr_3.5rem] items-center gap-3 text-sm">
+                    <span className={us ? "font-medium text-ink" : "text-ink-3"}>{c.name}</span>
+                    <span className="h-7 overflow-hidden rounded-full bg-line/60">
+                      <span
+                        className={`block h-full rounded-full ${us ? "bg-accent" : "bg-ink-3/40"}`}
+                        style={{ width: `${Math.max(4, (c.from / max) * 100)}%` }}
+                      />
+                    </span>
+                    <span className={`text-right font-tech ${us ? "text-accent" : "text-ink-2"}`}>${c.from}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </Reveal>
+
+        <p className="mt-14 text-center text-sm text-ink-3">
           Go past the free limit and nothing breaks: your form keeps working and every response is saved. Cancel Pro
           whenever you like and keep all your data.
         </p>

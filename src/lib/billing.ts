@@ -1,6 +1,12 @@
 import "server-only";
 import { db } from "./db";
-import { FREE_MONTHLY_RESPONSES, PRO_PRICE, type BillingInterval } from "./plans";
+import {
+  FREE_MONTHLY_RESPONSES,
+  LIFETIME_PRICE,
+  PRICE_LOOKUP_KEYS,
+  PRO_PRICE,
+  type Purchase,
+} from "./plans";
 
 /**
  * Formloom Cloud billing, through Stripe's REST API (plain fetch, so it runs on Workers).
@@ -16,7 +22,8 @@ export type Plan =
   | {
       kind: "pro";
       status: string;
-      interval: BillingInterval | null;
+      /** "lifetime" was paid once and never renews. */
+      interval: Purchase | null;
       periodEnd: number | null;
       cancelAtPeriodEnd: boolean;
     };
@@ -41,7 +48,10 @@ export async function getPlan(userId: string): Promise<Plan> {
   return {
     kind: "pro",
     status: row.plan_status ?? "active",
-    interval: row.plan_interval === "year" || row.plan_interval === "month" ? row.plan_interval : null,
+    interval:
+      row.plan_interval === "year" || row.plan_interval === "month" || row.plan_interval === "lifetime"
+        ? row.plan_interval
+        : null,
     periodEnd: row.plan_period_end,
     cancelAtPeriodEnd: Boolean(row.plan_cancel_at_period_end),
   };
@@ -95,7 +105,7 @@ export async function releaseHeldResponses(userId: string) {
 
 type StripeParams = Record<string, string | number | boolean | undefined>;
 
-async function stripe<T>(method: "GET" | "POST", path: string, params: StripeParams = {}): Promise<T> {
+async function stripe<T = unknown>(method: "GET" | "POST", path: string, params: StripeParams = {}): Promise<T> {
   const body = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) if (v !== undefined) body.append(k, String(v));
   const qs = method === "GET" && [...body].length ? `?${body}` : "";
@@ -130,23 +140,59 @@ async function customerFor(user: { id: string; email: string; name: string }): P
   return customer.id;
 }
 
-/** A Stripe Checkout page for Formloom Pro. The price is defined inline, so no Stripe setup is needed. */
+/**
+ * The Stripe price for a purchase, by lookup key (scripts/stripe-setup.sh creates them).
+ * Null when the account hasn't been set up, in which case Checkout defines the price inline.
+ */
+const priceCache = new Map<Purchase, string | null>();
+async function priceId(purchase: Purchase): Promise<string | null> {
+  if (!priceCache.has(purchase)) {
+    const list = await stripe<{ data: { id: string }[] }>("GET", "prices", {
+      "lookup_keys[]": PRICE_LOOKUP_KEYS[purchase],
+      active: true,
+      limit: 1,
+    });
+    priceCache.set(purchase, list.data[0]?.id ?? null);
+  }
+  return priceCache.get(purchase) ?? null;
+}
+
+/** A Stripe Checkout page: Pro monthly or yearly, or Lifetime paid once. */
 export async function createCheckout(
   user: { id: string; email: string; name: string },
-  interval: BillingInterval,
+  purchase: Purchase,
   baseUrl: string,
 ): Promise<string> {
+  const lifetime = purchase === "lifetime";
+  const price = await priceId(purchase);
+  const line: StripeParams = price
+    ? { "line_items[0][price]": price }
+    : {
+        "line_items[0][price_data][currency]": "usd",
+        "line_items[0][price_data][unit_amount]": lifetime ? LIFETIME_PRICE : PRO_PRICE[purchase],
+        "line_items[0][price_data][product_data][name]": lifetime ? "Formloom Pro Lifetime" : "Formloom Pro",
+        ...(lifetime ? {} : { "line_items[0][price_data][recurring][interval]": purchase }),
+      };
   const session = await stripe<{ url: string }>("POST", "checkout/sessions", {
-    mode: "subscription",
+    mode: lifetime ? "payment" : "subscription",
     customer: await customerFor(user),
     client_reference_id: user.id,
     "line_items[0][quantity]": 1,
-    "line_items[0][price_data][currency]": "usd",
-    "line_items[0][price_data][unit_amount]": PRO_PRICE[interval],
-    "line_items[0][price_data][recurring][interval]": interval,
-    "line_items[0][price_data][product_data][name]": "Formloom Pro",
-    "subscription_data[metadata][formloom_user_id]": user.id,
+    ...line,
+    "metadata[formloom_user_id]": user.id,
+    "metadata[formloom_plan]": purchase,
+    ...(lifetime
+      ? {
+          "payment_intent_data[metadata][formloom_user_id]": user.id,
+          "payment_intent_data[metadata][formloom_plan]": "lifetime",
+          "invoice_creation[enabled]": true,
+        }
+      : { "subscription_data[metadata][formloom_user_id]": user.id }),
     allow_promotion_codes: true,
+    billing_address_collection: "auto",
+    "customer_update[address]": "auto",
+    "customer_update[name]": "auto",
+    "tax_id_collection[enabled]": true,
     success_url: `${baseUrl}/account?upgraded=1`,
     cancel_url: `${baseUrl}/account`,
   });
@@ -186,6 +232,11 @@ export async function syncSubscription(sub: StripeSubscription) {
       (await d.get<{ id: string }>("SELECT id FROM users WHERE id = ?", sub.metadata.formloom_user_id))) ||
     (await d.get<{ id: string }>("SELECT id FROM users WHERE stripe_customer_id = ?", sub.customer));
   if (!owner) return;
+  if (await hasLifetime(owner.id)) {
+    // Lifetime outranks any subscription; just remember the ids.
+    await d.run("UPDATE users SET stripe_customer_id = ? WHERE id = ?", sub.customer, owner.id);
+    return;
+  }
   const item = sub.items?.data[0];
   const periodEnd = item?.current_period_end ?? sub.current_period_end ?? null;
   const pro = PAYING.has(sub.status);
@@ -204,6 +255,74 @@ export async function syncSubscription(sub: StripeSubscription) {
   if (pro) await releaseHeldResponses(owner.id);
 }
 
+async function hasLifetime(userId: string) {
+  const row = await (await db()).get<{ plan: string; plan_interval: string | null }>(
+    "SELECT plan, plan_interval FROM users WHERE id = ?",
+    userId,
+  );
+  return row?.plan === "pro" && row.plan_interval === "lifetime";
+}
+
+export type StripeCheckoutSession = {
+  id: string;
+  mode: string;
+  payment_status: string;
+  customer: string | null;
+  subscription: string | null;
+  payment_intent: string | null;
+  metadata?: Record<string, string>;
+};
+
+/** Grants Lifetime for a paid one-time Checkout, and stops any subscription from renewing. */
+export async function grantLifetime(session: StripeCheckoutSession) {
+  if (session.mode !== "payment" || session.payment_status !== "paid") return;
+  if (session.metadata?.formloom_plan !== "lifetime") return;
+  const d = await db();
+  const owner = await d.get<{ id: string; stripe_subscription_id: string | null }>(
+    "SELECT id, stripe_subscription_id FROM users WHERE id = ?",
+    session.metadata.formloom_user_id ?? "",
+  );
+  if (!owner) return;
+  if (session.payment_intent) {
+    const pi = await stripe<{ latest_charge?: { refunded?: boolean } | null }>(
+      "GET",
+      `payment_intents/${session.payment_intent}`,
+      { "expand[]": "latest_charge" },
+    );
+    if (pi.latest_charge?.refunded) return;
+  }
+  if (owner.stripe_subscription_id) {
+    const sub = await fetchSubscription(owner.stripe_subscription_id).catch(() => null);
+    if (sub && PAYING.has(sub.status) && !sub.cancel_at_period_end) {
+      await stripe("POST", `subscriptions/${sub.id}`, { cancel_at_period_end: true });
+    }
+  }
+  await d.run(
+    `UPDATE users SET plan = 'pro', plan_status = 'active', plan_interval = 'lifetime', plan_period_end = NULL,
+       plan_cancel_at_period_end = 0, stripe_customer_id = COALESCE(?, stripe_customer_id) WHERE id = ?`,
+    session.customer,
+    owner.id,
+  );
+  await releaseHeldResponses(owner.id);
+}
+
+/** A fully refunded Lifetime payment takes the account back to Free. */
+export async function revokeRefundedLifetime(charge: { payment_intent?: string | null; refunded?: boolean }) {
+  if (!charge.refunded || !charge.payment_intent) return;
+  const pi = await stripe<{ metadata?: Record<string, string> }>("GET", `payment_intents/${charge.payment_intent}`);
+  if (pi.metadata?.formloom_plan !== "lifetime" || !pi.metadata.formloom_user_id) return;
+  const userId = pi.metadata.formloom_user_id;
+  if (!(await hasLifetime(userId))) return;
+  await (await db()).run(
+    `UPDATE users SET plan = 'free', plan_status = 'refunded', plan_interval = NULL WHERE id = ?`,
+    userId,
+  );
+}
+
+export async function fetchCheckoutSession(id: string) {
+  return stripe<StripeCheckoutSession>("GET", `checkout/sessions/${id}`);
+}
+
 /** Catches up after Checkout returns, in case the webhook hasn't arrived yet. */
 export async function syncFromStripe(userId: string) {
   const row = await (await db()).get<{ stripe_customer_id: string | null }>(
@@ -217,6 +336,12 @@ export async function syncFromStripe(userId: string) {
     limit: 1,
   });
   if (list.data[0]) await syncSubscription(list.data[0]);
+  if (await hasLifetime(userId)) return;
+  const sessions = await stripe<{ data: StripeCheckoutSession[] }>("GET", "checkout/sessions", {
+    customer: row.stripe_customer_id,
+    limit: 5,
+  });
+  for (const session of sessions.data) await grantLifetime(session);
 }
 
 export async function fetchSubscription(id: string) {

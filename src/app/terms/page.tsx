@@ -33,6 +33,11 @@ export default function TermsPage() {
           Pro is billed in advance, monthly or yearly, through Stripe. You can cancel any time from your account; Pro
           stays on until the end of the period you paid for, and you keep all your forms and responses afterwards.
         </li>
+        <li>
+          Lifetime is a one-time payment for Pro on the hosted service for as long as we run it. A Lifetime purchase
+          you have refunded returns the account to Free. If we ever shut the hosted service down, Lifetime accounts get
+          at least 90 days&rsquo; notice and a full export of their data, and Formloom stays free to self-host.
+        </li>
         <li>We will give at least 30 days&rsquo; notice before changing the price of a plan you are on.</li>
       </ul>
 

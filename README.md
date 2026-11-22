@@ -91,14 +91,24 @@ Self-hosted Formloom has no plans: every feature is on and nothing is metered.
 
 The hosted version ([formloom.arjunkshah21.workers.dev](https://formloom.arjunkshah21.workers.dev)) turns on two plans when `STRIPE_SECRET_KEY` is set:
 
-| | Free | Pro |
-| --- | --- | --- |
-| Price | $0 | $6/month billed yearly, or $8 monthly |
-| Responses | 1,000 a month | Unlimited |
-| "Made with Formloom" badge | Always shown | Optional |
-| Everything else | Included | Included |
+| | Free | Pro | Lifetime |
+| --- | --- | --- | --- |
+| Price | $0 | $6/month billed yearly, or $8 monthly | $99 once |
+| Responses | 1,000 a month | Unlimited | Unlimited |
+| "Made with Formloom" badge | Always shown | Optional | Optional |
+| Everything else | Included | Included | Included |
 
-Past the free allowance, forms keep working and every response is saved. The extra ones are held, hidden from results, exports, the API and webhooks, and appear as soon as the account upgrades. Prices live in `src/lib/plans.ts`. Checkout defines the price inline, so Stripe needs no products set up beforehand. Point a Stripe webhook at `/api/billing/webhook` with `checkout.session.completed` and `customer.subscription.created`, `.updated` and `.deleted`, and turn on the customer portal in Stripe's settings.
+Past the free allowance, forms keep working and every response is saved. The extra ones are held, hidden from results, exports, the API and webhooks, and appear as soon as the account upgrades. Prices live in `src/lib/plans.ts`.
+
+Set up Stripe with the [Stripe CLI](https://docs.stripe.com/stripe-cli):
+
+```bash
+stripe login
+scripts/stripe-setup.sh https://forms.example.com          # test mode
+scripts/stripe-setup.sh https://forms.example.com --live   # live mode
+```
+
+The script is safe to rerun. It creates the products and prices (by lookup key), a `LAUNCH50` promotion code for half off the first Pro payment, the customer portal (cards, invoices, cancellation, monthly/yearly switching) and the webhook, and prints the webhook's signing secret the first time. Set that as `STRIPE_WEBHOOK_SECRET` and your API key as `STRIPE_SECRET_KEY`. Without the script, Checkout still works with inline prices.
 
 ## Embedding
 

@@ -1,4 +1,4 @@
-import { dollars, PLAN_FEATURES, PRO_PRICE } from "@/lib/plans";
+import { dollars, LIFETIME_PRICE, PLAN_FEATURES, PRO_PRICE } from "@/lib/plans";
 import type { CodeTab } from "./CodeTabs";
 
 export const CODE: CodeTab[] = [
@@ -64,7 +64,7 @@ export function isFromFormloom(rawBody: string, header: string, secret: string) 
 ];
 
 export const COMPARE: [string, string | boolean, string | boolean][] = [
-  ["Price", "Free, or $6/mo for Pro", "From ~$25/mo"],
+  ["Price", "Free, or $6/mo for Pro ($99 for life)", "From ~$28/mo"],
   ["Free responses per month", "1,000 (unlimited self-hosted)", "Capped low"],
   ["Paid responses per month", "Unlimited", "Capped by plan"],
   ["Over the limit", "Form keeps working", "Form stops"],
@@ -84,7 +84,7 @@ export const FAQ = [
   },
   {
     q: "What does Pro add, and what happens if I go over?",
-    a: "Pro is $6 a month billed yearly, or $8 month to month: unlimited responses and no \u201cMade with Formloom\u201d badge. One flat price, no seats or tiers. If a free account goes past 1,000 responses in a month, the form keeps working and every response is saved. The extra ones wait for you and appear as soon as you upgrade.",
+    a: "Pro is $6 a month billed yearly, or $8 month to month: unlimited responses and no \u201cMade with Formloom\u201d badge. One flat price, no seats or tiers. Rather not subscribe? Lifetime is $99, paid once. If a free account goes past 1,000 responses in a month, the form keeps working and every response is saved. The extra ones wait for you and appear as soon as you upgrade.",
   },
   {
     q: "What do I need to host it?",
@@ -134,7 +134,7 @@ export const PRICING: {
     name: "Cloud · Pro",
     price: dollars(PRO_PRICE.year / 12),
     per: "/month",
-    note: `Billed yearly, or ${dollars(PRO_PRICE.month)} month to month. One flat price, no seats.`,
+    note: `Billed yearly, or ${dollars(PRO_PRICE.month)} month to month, or ${dollars(LIFETIME_PRICE)} once for life. No seats.`,
     features: PLAN_FEATURES.pro,
     cta: "Go Pro",
     href: "pro",

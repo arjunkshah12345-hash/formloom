@@ -8,8 +8,9 @@ import { appUrl } from "@/lib/url";
 export async function startCheckout(formData: FormData) {
   const user = await requireUser();
   if (!billingEnabled()) redirect("/account");
-  const interval = formData.get("interval") === "month" ? "month" : "year";
-  redirect(await createCheckout(user, interval, await appUrl()));
+  const asked = formData.get("interval");
+  const purchase = asked === "month" || asked === "lifetime" ? asked : "year";
+  redirect(await createCheckout(user, purchase, await appUrl()));
 }
 
 export async function openBillingPortal() {

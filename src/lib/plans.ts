@@ -13,6 +13,34 @@ export const PRO_PRICE = {
 
 export type BillingInterval = keyof typeof PRO_PRICE;
 
+/** USD cents, paid once: Pro for the life of the hosted service. */
+export const LIFETIME_PRICE = 9900;
+
+/** What a Checkout can sell. */
+export type Purchase = BillingInterval | "lifetime";
+
+/** Stripe price lookup keys, created by scripts/stripe-setup.sh. */
+export const PRICE_LOOKUP_KEYS: Record<Purchase, string> = {
+  month: "formloom_pro_month",
+  year: "formloom_pro_year",
+  lifetime: "formloom_pro_lifetime",
+};
+
+/** Half off the first Pro payment, made by scripts/stripe-setup.sh. */
+export const LAUNCH_CODE = "LAUNCH50";
+
+/**
+ * The cheapest paid plan elsewhere, USD per month at its lowest advertised billing (checked November 2026).
+ * Update when they change; the landing page reads from here.
+ */
+export const COMPETITOR_PRICES: { name: string; from: number }[] = [
+  { name: "Fillout", from: 15 },
+  { name: "Tally", from: 24 },
+  { name: "Typeform", from: 28 },
+  { name: "Youform", from: 29 },
+  { name: "Jotform", from: 34 },
+];
+
 export const dollars = (cents: number) => `$${(cents / 100).toFixed(cents % 100 ? 2 : 0)}`;
 
 export const PLAN_FEATURES = {
@@ -29,5 +57,10 @@ export const PLAN_FEATURES = {
     "Everything in Free",
     "Cancel anytime, keep every response",
     "Funds the open-source project",
+  ],
+  lifetime: [
+    "Everything in Pro, for good",
+    "Pay once, never renew",
+    "Unlimited responses, no badge",
   ],
 } as const;
