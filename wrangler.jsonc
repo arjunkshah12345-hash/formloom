@@ -14,7 +14,8 @@
   "observability": { "enabled": true },
   "vars": {
     "FORMLOOM_RUNTIME": "cloudflare",
-    "SECURE_COOKIES": "true"
+    "SECURE_COOKIES": "true",
+    "APP_URL": "https://formloom.arjunkshah21.workers.dev"
   },
   "d1_databases": [
     {

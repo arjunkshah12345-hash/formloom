@@ -8,7 +8,7 @@
     "start": "NODE_OPTIONS=--disable-warning=ExperimentalWarning next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "cf:build": "FORMLOOM_RUNTIME=cloudflare opennextjs-cloudflare build",
+    "cf:build": "FORMLOOM_RUNTIME=cloudflare APP_URL=${APP_URL:-https://formloom.arjunkshah21.workers.dev} opennextjs-cloudflare build",
     "cf:migrate": "wrangler d1 migrations apply formloom --remote",
     "cf:deploy": "pnpm cf:build && pnpm cf:migrate && opennextjs-cloudflare deploy",
     "cf:preview": "pnpm cf:build && opennextjs-cloudflare preview"
