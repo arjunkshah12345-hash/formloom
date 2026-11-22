@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    // Markdown copies of blog posts for AI agents: /blog/<slug>.md
+    return [{ source: "/blog/:slug.md", destination: "/md/blog/:slug" }];
+  },
   async headers() {
     return [
       {

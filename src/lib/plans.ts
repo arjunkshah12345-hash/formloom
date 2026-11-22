@@ -35,9 +35,9 @@ export const LAUNCH_CODE = "LAUNCH50";
  */
 export const COMPETITOR_PRICES: { name: string; from: number }[] = [
   { name: "Fillout", from: 15 },
+  { name: "Youform", from: 20 },
   { name: "Tally", from: 24 },
   { name: "Typeform", from: 28 },
-  { name: "Youform", from: 29 },
   { name: "Jotform", from: 34 },
 ];
 

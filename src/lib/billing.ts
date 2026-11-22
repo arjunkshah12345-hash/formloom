@@ -199,6 +199,20 @@ export async function createCheckout(
   return session.url;
 }
 
+/** Formloom's own portal configuration (scripts/stripe-setup.sh), or the account default if there isn't one. */
+let portalConfig: string | null | undefined;
+async function portalConfiguration(): Promise<string | undefined> {
+  if (portalConfig === undefined) {
+    const list = await stripe<{ data: { id: string; metadata?: Record<string, string> }[] }>(
+      "GET",
+      "billing_portal/configurations",
+      { active: true, limit: 100 },
+    );
+    portalConfig = list.data.find((c) => c.metadata?.formloom === "portal")?.id ?? null;
+  }
+  return portalConfig ?? undefined;
+}
+
 export async function createPortal(userId: string, baseUrl: string): Promise<string | null> {
   const row = await (await db()).get<{ stripe_customer_id: string | null }>(
     "SELECT stripe_customer_id FROM users WHERE id = ?",
@@ -207,6 +221,7 @@ export async function createPortal(userId: string, baseUrl: string): Promise<str
   if (!row?.stripe_customer_id) return null;
   const session = await stripe<{ url: string }>("POST", "billing_portal/sessions", {
     customer: row.stripe_customer_id,
+    configuration: await portalConfiguration(),
     return_url: `${baseUrl}/account`,
   });
   return session.url;

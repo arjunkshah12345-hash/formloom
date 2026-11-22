@@ -41,7 +41,9 @@ Do this:
    GET ${base}/api/v1/forms  → { data: [{ id, slug, title, published, closed, responses, ... }] }
    GET ${base}/api/v1/forms/{id}  → the form definition
    GET ${base}/api/v1/forms/{id}/responses?limit=100&offset=0&since=<ms epoch>  → { total, data: [response] }
+   POST ${base}/api/v1/forms  with {"title","questions":[{"type","title","choices"?}],"publish":true}  → { id, url, embed } (creates a form)
    Header: Authorization: Bearer ${apiKey ? "$FORMLOOM_API_KEY" : key}
+   Full spec: ${base}/openapi.json. An MCP server with the same tools is at ${base}/api/mcp (same Bearer header).
 5. Add FORMLOOM_API_KEY (and FORMLOOM_WEBHOOK_SECRET if used) to .env.example without real values.
 6. Run the project's checks, then summarise what you changed and anything I still need to do in Formloom.
 

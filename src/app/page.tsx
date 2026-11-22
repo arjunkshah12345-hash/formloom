@@ -30,6 +30,8 @@ import { COMPETITOR_PRICES, dollars, LAUNCH_CODE, LIFETIME_PRICE, PRO_PRICE } fr
 import { demoForm } from "@/lib/demo";
 import { FIELD_META, FIELD_TYPES } from "@/lib/schema";
 import { appUrl, REPO_URL } from "@/lib/url";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { SITE_URL } from "@/lib/site";
 
 
 export default async function Home() {
@@ -38,6 +40,34 @@ export default async function Home() {
 
   return (
     <div className="dark min-h-dvh overflow-x-clip bg-paper font-sans text-ink selection:bg-accent selection:text-white">
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "Formloom",
+            url: SITE_URL,
+            description: "The open-source Typeform alternative: conversational forms and surveys with logic, themes, webhooks, a REST API and an MCP server. MIT licensed and self-hostable.",
+            applicationCategory: "BusinessApplication",
+            applicationSubCategory: "Form builder",
+            operatingSystem: "Web, Docker, Node.js, Cloudflare Workers",
+            license: "https://opensource.org/licenses/MIT",
+            sameAs: [REPO_URL],
+            offers: [
+              { "@type": "Offer", name: "Free", price: "0", priceCurrency: "USD", description: "1,000 responses a month, every feature" },
+              { "@type": "Offer", name: "Pro (yearly)", price: String(PRO_PRICE.year / 100), priceCurrency: "USD", description: "Unlimited responses, billed yearly" },
+              { "@type": "Offer", name: "Pro (monthly)", price: String(PRO_PRICE.month / 100), priceCurrency: "USD" },
+              { "@type": "Offer", name: "Lifetime", price: String(LIFETIME_PRICE / 100), priceCurrency: "USD", description: "Pro, paid once" },
+              { "@type": "Offer", name: "Self-hosted", price: "0", priceCurrency: "USD", description: "Unlimited, MIT licensed" },
+            ],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+          },
+        ]}
+      />
       {/* ================================================================ nav */}
       <header className="fixed inset-x-0 top-0 z-50">
         <div className="mx-auto mt-3 flex h-12 max-w-[1240px] items-center justify-between rounded-full border border-white/10 bg-black/40 pr-1.5 pl-4 backdrop-blur-xl sm:mx-5 lg:mx-auto">
@@ -56,6 +86,7 @@ export default async function Home() {
               ["Results", "#results"],
               ["Developers", "#developers"],
               ["Pricing", "#pricing"],
+              ["Blog", "/blog"],
             ].map(([l, h]) => (
               <a
                 key={l}
@@ -646,6 +677,7 @@ export default async function Home() {
               ["Self-host", "#self-host"],
               ["Pricing", "#pricing"],
               ["FAQ", "#faq"],
+              ["Blog", "/blog"],
             ]}
           />
           <FooterCol
@@ -654,6 +686,8 @@ export default async function Home() {
               ["Webhooks", "#developers"],
               ["REST API", "#developers"],
               ["Embeds", "#developers"],
+              ["AI agents & MCP", "/docs/agents"],
+              ["llms.txt", "/llms.txt"],
               ["Source", REPO_URL],
             ]}
           />

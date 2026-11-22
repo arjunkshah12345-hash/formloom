@@ -9,7 +9,7 @@
 #   - "Formloom Pro" with monthly and yearly prices (lookup keys formloom_pro_month / _year)
 #   - "Formloom Pro Lifetime", a one-time price (lookup key formloom_pro_lifetime)
 #   - the LAUNCH50 promotion code: half off the first Pro payment
-#   - a customer portal (cards, invoices, cancel, switch monthly <-> yearly)
+#   - its own customer portal (cards, invoices, cancel, switch monthly <-> yearly); the default is left alone
 #   - the webhook endpoint; prints its signing secret once, on creation
 #
 # Prices must match src/lib/plans.ts.
@@ -96,9 +96,15 @@ portal=(
   -d "features[subscription_update][products][0][prices][]=$P_MONTH"
   -d "features[subscription_update][products][0][prices][]=$P_YEAR"
 )
-s get /v1/billing_portal/configurations -d is_default=true -d limit=1
-CFG=$(j '.data[0].id // empty')
-if [[ -n "$CFG" ]]; then s post "/v1/billing_portal/configurations/$CFG" "${portal[@]}"; else s post /v1/billing_portal/configurations "${portal[@]}"; fi
+# Formloom gets its own configuration (tagged with metadata) and never touches the account's default,
+# so a Stripe account shared with another product keeps its own portal settings.
+s get /v1/billing_portal/configurations -d active=true -d limit=100
+CFG=$(jq -r '[.data[] | select(.metadata.formloom == "portal")][0].id // empty' "$tmp")
+if [[ -n "$CFG" ]]; then
+  s post "/v1/billing_portal/configurations/$CFG" "${portal[@]}"
+else
+  s post /v1/billing_portal/configurations -d "metadata[formloom]=portal" "${portal[@]}"
+fi
 echo "  $(j .id)"
 
 echo "→ Webhook"

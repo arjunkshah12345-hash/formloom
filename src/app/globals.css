@@ -733,3 +733,47 @@ textarea.input {
 .fl-dots > i:nth-child(3) { animation-delay: 0.3s; }
 @keyframes fl-dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.35; } 30% { transform: translateY(-90%); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .fl-shimmer, .fl-dots > i { animation: none; } }
+
+/* ------------------------------------------------------------ blog article */
+.prose-blog {
+  color: var(--ink-2);
+  font-size: 17px;
+  line-height: 1.75;
+}
+.prose-blog > * + * { margin-top: 1.15em; }
+.prose-blog h2 {
+  margin-top: 2.4em;
+  scroll-margin-top: 6rem;
+  font-family: var(--font-funnel), var(--font-geist-sans), sans-serif;
+  font-size: 1.65rem;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.prose-blog h3 {
+  margin-top: 1.9em;
+  scroll-margin-top: 6rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.prose-blog h4 { margin-top: 1.5em; font-weight: 500; color: var(--ink); }
+.prose-blog a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 4px; }
+.prose-blog a:hover { text-decoration-color: var(--accent); }
+.prose-blog strong { color: var(--ink); font-weight: 600; }
+.prose-blog ul, .prose-blog ol { padding-left: 1.3em; }
+.prose-blog ul { list-style: disc; }
+.prose-blog ol { list-style: decimal; }
+.prose-blog li + li { margin-top: 0.4em; }
+.prose-blog li::marker { color: var(--ink-3); }
+.prose-blog blockquote { border-left: 2px solid var(--accent); padding-left: 1.1em; color: var(--ink); }
+.prose-blog code { font-family: var(--font-geist-mono), monospace; font-size: 0.88em; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 0.1em 0.35em; }
+.prose-blog pre { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 1.1em 1.2em; font-size: 14px; line-height: 1.6; }
+.prose-blog pre code { border: 0; background: none; padding: 0; font-size: inherit; }
+.prose-blog hr { border: 0; border-top: 1px solid var(--line); margin: 2.5em 0; }
+.prose-blog .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+.prose-blog table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.5; }
+.prose-blog th { text-align: left; font-weight: 500; color: var(--ink); background: var(--surface); }
+.prose-blog th, .prose-blog td { padding: 0.7em 0.9em; border-bottom: 1px solid var(--line); vertical-align: top; }
+.prose-blog tr:last-child td { border-bottom: 0; }

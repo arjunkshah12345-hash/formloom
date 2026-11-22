@@ -41,7 +41,7 @@ Build beautiful one-question-at-a-time forms with logic jumps, answer recall, th
 
 ## Quick start
 
-Requires **Node 22.5+** (uses the built-in `node:sqlite`) and pnpm.
+Requires **Node 22.13+** (uses the built-in `node:sqlite`) and pnpm.
 
 ```bash
 pnpm install
