@@ -1,3 +1,4 @@
+import { dollars, PLAN_FEATURES, PRO_PRICE } from "@/lib/plans";
 import type { CodeTab } from "./CodeTabs";
 
 export const CODE: CodeTab[] = [
@@ -63,13 +64,15 @@ export function isFromFormloom(rawBody: string, header: string, secret: string) 
 ];
 
 export const COMPARE: [string, string | boolean, string | boolean][] = [
-  ["Price", "Free, forever", "Monthly plans"],
-  ["Responses per month", "Unlimited", "Capped by plan"],
+  ["Price", "Free, or $6/mo for Pro", "From ~$25/mo"],
+  ["Free responses per month", "1,000 (unlimited self-hosted)", "Capped low"],
+  ["Paid responses per month", "Unlimited", "Capped by plan"],
+  ["Over the limit", "Form keeps working", "Form stops"],
   ["Where data lives", "Your server", "Their cloud"],
   ["Logic jumps & recall", true, true],
   ["Custom themes & fonts", true, true],
   ["Webhooks & API", true, "Higher tiers"],
-  ["Remove branding", true, "Higher tiers"],
+  ["Remove branding", "Pro, or free self-hosted", "Paid plans"],
   ["Read & change the source", true, false],
   ["Works offline / air-gapped", true, false],
 ];
@@ -77,7 +80,11 @@ export const COMPARE: [string, string | boolean, string | boolean][] = [
 export const FAQ = [
   {
     q: "Is Formloom really free?",
-    a: "Yes. It's MIT licensed. Run it on your own machine, a $5 VPS or inside your company network. There are no paid tiers and no response limits.",
+    a: "Yes. The hosted version is free for up to 1,000 responses a month with every question type, logic, theme, webhook and the API. Self-hosted Formloom is MIT licensed with no limits at all: run it on your own machine, a $5 VPS or inside your company network.",
+  },
+  {
+    q: "What does Pro add, and what happens if I go over?",
+    a: "Pro is $6 a month billed yearly, or $8 month to month: unlimited responses and no \u201cMade with Formloom\u201d badge. One flat price, no seats or tiers. If a free account goes past 1,000 responses in a month, the form keeps working and every response is saved. The extra ones wait for you and appear as soon as you upgrade.",
   },
   {
     q: "What do I need to host it?",
@@ -98,5 +105,55 @@ export const FAQ = [
   {
     q: "Do you track my respondents?",
     a: "No third-party scripts and no telemetry. Formloom counts views, starts and drop-off for your own analytics using an anonymous ID kept on your server.",
+  },
+];
+
+/** Self-hosted, Cloud Free and Cloud Pro. Prices mirror src/lib/plans.ts. */
+export const PRICING: {
+  name: string;
+  price: string;
+  per: string;
+  note: string;
+  features: readonly string[];
+  cta: string;
+  /** "cta" = sign up or dashboard, "pro" = upgrade, otherwise a link. */
+  href: string;
+  featured?: boolean;
+  tag?: string;
+}[] = [
+  {
+    name: "Cloud · Free",
+    price: "$0",
+    per: "",
+    note: "Everything you need to run real forms, hosted for you.",
+    features: PLAN_FEATURES.free,
+    cta: "Start free",
+    href: "cta",
+  },
+  {
+    name: "Cloud · Pro",
+    price: dollars(PRO_PRICE.year / 12),
+    per: "/month",
+    note: `Billed yearly, or ${dollars(PRO_PRICE.month)} month to month. One flat price, no seats.`,
+    features: PLAN_FEATURES.pro,
+    cta: "Go Pro",
+    href: "pro",
+    featured: true,
+    tag: "Best value",
+  },
+  {
+    name: "Self-hosted",
+    price: "$0",
+    per: "forever",
+    note: "MIT licensed. Your server, your database, every feature.",
+    features: [
+      "Unlimited responses",
+      "No badge unless you want one",
+      "Docker, Node or Cloudflare Workers",
+      "One SQLite file to back up",
+      "Read and change every line",
+    ],
+    cta: "Get the source ↗",
+    href: "https://github.com/arjunkshah12345-hash/formloom",
   },
 ];

@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { ResultsView } from "@/components/results/ResultsView";
 import { requireUser } from "@/lib/auth";
-import { formStats, getForm, listResponses } from "@/lib/forms";
+import { HeldNotice } from "@/components/app/PlanNotice";
+import { formStats, getForm, listResponses, lockedCount } from "@/lib/forms";
 import { rangeSince } from "@/lib/range";
 import { summarize } from "@/lib/summary";
 
@@ -27,6 +28,7 @@ export default async function ResultsPage({ params, searchParams }: PageProps<"/
       summary={summarize(def, responses)}
       responses={responses}
       isPublished={Boolean(form.published)}
+      notice={<HeldNotice held={await lockedCount(form.id)} scope="form" />}
     />
   );
 }

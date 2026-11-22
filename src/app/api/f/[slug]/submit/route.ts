@@ -1,4 +1,5 @@
 import { after, NextResponse } from "next/server";
+import { shouldHoldNextResponse } from "@/lib/billing";
 import { closedReason } from "@/lib/closed";
 import { nextStep, sanitizeAnswers, validateAnswer, visiblePath } from "@/lib/engine";
 import { getFormBySlug, insertResponse } from "@/lib/forms";
@@ -50,6 +51,8 @@ export async function POST(req: Request, ctx: RouteContext<"/api/f/[slug]/submit
       ? body.startedAt
       : null;
   const ua = req.headers.get("user-agent") ?? "";
+  // Past the free plan's monthly allowance the response is still saved, just held until the owner upgrades.
+  const held = await shouldHoldNextResponse(form.userId);
   const response = await insertResponse(form.id, {
     answers: kept,
     hidden,
@@ -61,9 +64,9 @@ export async function POST(req: Request, ctx: RouteContext<"/api/f/[slug]/submit
     endingId: ending.id ?? null,
     startedAt,
     durationMs: startedAt ? now - startedAt : null,
-  });
+  }, held);
 
-  if (def.settings.webhookUrl) after(() => deliverWebhook(form.id, def, response));
+  if (def.settings.webhookUrl && !held) after(() => deliverWebhook(form.id, def, response));
 
   return NextResponse.json({ ok: true, id: response.id, endingId: ending.id });
 }

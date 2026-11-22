@@ -19,7 +19,7 @@ export function AppHeader({ user }: { user: User }) {
             Forms
           </Link>
           <Link href="/account" className={LINK}>
-            API &amp; account
+            Account
           </Link>
           <a href={REPO_URL} className={`${LINK} max-sm:hidden`} target="_blank" rel="noreferrer">
             GitHub ↗

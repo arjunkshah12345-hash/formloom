@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Download, KeyRound, Send, X } from "lucide-react";
 import { sendTestWebhook } from "@/lib/actions/webhooks";
 import type { FormSettings } from "@/lib/schema";
@@ -19,8 +20,11 @@ function Card({ title, description, children }: { title: string; description?: s
 
 export function SettingsView({
   deliveries,
+  brandingLocked = false,
 }: {
   deliveries: { id: string; status: number | null; error: string | null; createdAt: number; url: string }[];
+  /** On the free plan of Formloom Cloud the badge always shows. */
+  brandingLocked?: boolean;
 }) {
   const { def, update, formId } = useWorkspace();
   const s = def.settings;
@@ -57,7 +61,24 @@ export function SettingsView({
           <Toggle label="Progress bar" description="Show how far along respondents are." checked={s.showProgress} onChange={(v) => set({ showProgress: v })} />
           <Toggle label="Question numbers" checked={s.showNumbers} onChange={(v) => set({ showNumbers: v })} />
           <Toggle label="Allow going back" description="Show the previous-question arrow." checked={s.allowBack} onChange={(v) => set({ allowBack: v })} />
-          <Toggle label="“Made with Formloom” badge" checked={s.showBranding} onChange={(v) => set({ showBranding: v })} />
+          {brandingLocked ? (
+            <div className="flex items-start justify-between gap-4 py-1">
+              <span className="min-w-0">
+                <span className="block text-sm text-ink">“Made with Formloom” badge</span>
+                <span className="mt-0.5 block text-xs text-ink-3">
+                  Always on for free forms.{" "}
+                  <Link href="/account#plan" className="text-accent hover:underline">
+                    Remove it with Pro
+                  </Link>
+                </span>
+              </span>
+              <span className="mt-0.5 rounded-full bg-accent/15 px-2 py-0.5 font-tech text-[10px] tracking-wide text-accent uppercase">
+                Pro
+              </span>
+            </div>
+          ) : (
+            <Toggle label="“Made with Formloom” badge" checked={s.showBranding} onChange={(v) => set({ showBranding: v })} />
+          )}
         </Card>
 
         <Card title="Access" description="Control when this form accepts responses.">

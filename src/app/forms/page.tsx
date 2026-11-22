@@ -1,5 +1,7 @@
 import { AppHeader } from "@/components/app/AppHeader";
 import { FormsGrid } from "@/components/app/FormsGrid";
+import { HeldNotice } from "@/components/app/PlanNotice";
+import { heldResponses } from "@/lib/billing";
 import { requireUser } from "@/lib/auth";
 import { listForms } from "@/lib/forms";
 import { TEMPLATES } from "@/lib/templates";
@@ -18,6 +20,9 @@ export default async function FormsPage() {
     <div className="min-h-dvh">
       <AppHeader user={user} />
       <main className="mx-auto max-w-6xl px-5 py-10">
+        <div className="mb-8 empty:hidden">
+          <HeldNotice held={await heldResponses(user.id)} />
+        </div>
         <FormsGrid
           forms={forms}
           templates={templates}

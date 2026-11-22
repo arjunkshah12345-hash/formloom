@@ -7,7 +7,7 @@ const REPO = "https://github.com/arjunkshah12345-hash/formloom";
 
 export default function TermsPage() {
   return (
-    <LegalPage title="Terms of service" updated="21 November 2026">
+    <LegalPage title="Terms of service" updated="22 November 2026">
       <p>
         These terms cover the hosted Formloom service. The Formloom source code is separately available under the{" "}
         <a href={`${REPO}/blob/main/LICENSE`}>MIT licence</a>.
@@ -15,12 +15,25 @@ export default function TermsPage() {
 
       <h2>Using the service</h2>
       <ul>
-        <li>The hosted service is free and provided as is, without warranties of any kind.</li>
+        <li>The hosted service is provided as is, without warranties of any kind.</li>
         <li>You are responsible for the forms you publish and the data you collect with them.</li>
         <li>
           Don&rsquo;t use Formloom for phishing, collecting passwords or payment card numbers, spam, or anything
           illegal. We may remove forms or accounts that do.
         </li>
+      </ul>
+
+      <h2>Plans and billing</h2>
+      <ul>
+        <li>
+          The Free plan includes 1,000 responses a month. Responses past that are still saved and become visible when
+          you upgrade.
+        </li>
+        <li>
+          Pro is billed in advance, monthly or yearly, through Stripe. You can cancel any time from your account; Pro
+          stays on until the end of the period you paid for, and you keep all your forms and responses afterwards.
+        </li>
+        <li>We will give at least 30 days&rsquo; notice before changing the price of a plan you are on.</li>
       </ul>
 
       <h2>Your content</h2>

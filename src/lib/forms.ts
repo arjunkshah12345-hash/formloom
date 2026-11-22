@@ -61,7 +61,7 @@ function newSlug() {
 export async function listForms(userId: string): Promise<FormListItem[]> {
   const rows = await (await db()).all<RawForm & { response_count: number; last_response_at: number | null }>(
     `SELECT f.*, COUNT(r.id) AS response_count, MAX(r.submitted_at) AS last_response_at
-     FROM forms f LEFT JOIN responses r ON r.form_id = f.id
+     FROM forms f LEFT JOIN responses r ON r.form_id = f.id AND r.locked = 0
      WHERE f.user_id = ? GROUP BY f.id ORDER BY f.updated_at DESC`,
     userId,
   );
@@ -213,11 +213,13 @@ const toResponse = (r: RawResponse): ResponseRow => ({
 export async function insertResponse(
   formId: string,
   data: Omit<ResponseRow, "id" | "submittedAt">,
+  /** Held past the free plan's monthly allowance; shown once the owner upgrades. */
+  locked = false,
 ): Promise<ResponseRow> {
   const row: ResponseRow = { ...data, id: uid("r"), submittedAt: Date.now() };
   await (await db()).run(
-      `INSERT INTO responses (id, form_id, answers, hidden, meta, ending_id, started_at, submitted_at, duration_ms)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO responses (id, form_id, answers, hidden, meta, ending_id, started_at, submitted_at, duration_ms, locked)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       row.id,
       formId,
       JSON.stringify(row.answers),
@@ -227,6 +229,7 @@ export async function insertResponse(
       row.startedAt,
       row.submittedAt,
       row.durationMs,
+      locked ? 1 : 0,
   );
   return row;
 }
@@ -236,7 +239,7 @@ export async function listResponses(
   opts: { limit?: number; offset?: number; since?: number } = {},
 ) {
   const rows = await (await db()).all<RawResponse>(
-    `SELECT * FROM responses WHERE form_id = ? AND submitted_at >= ?
+    `SELECT * FROM responses WHERE form_id = ? AND locked = 0 AND submitted_at >= ?
      ORDER BY submitted_at DESC LIMIT ? OFFSET ?`,
     formId,
     opts.since ?? 0,
@@ -246,8 +249,20 @@ export async function listResponses(
   return rows.map(toResponse);
 }
 
-export async function countResponses(formId: string): Promise<number> {
-  const r = await (await db()).get<{ n: number }>("SELECT COUNT(*) AS n FROM responses WHERE form_id = ?", formId);
+/** Visible responses; pass `includeLocked` to count everything the form has received. */
+export async function countResponses(formId: string, includeLocked = false): Promise<number> {
+  const r = await (await db()).get<{ n: number }>(
+    `SELECT COUNT(*) AS n FROM responses WHERE form_id = ?${includeLocked ? "" : " AND locked = 0"}`,
+    formId,
+  );
+  return r?.n ?? 0;
+}
+
+export async function lockedCount(formId: string): Promise<number> {
+  const r = await (await db()).get<{ n: number }>(
+    "SELECT COUNT(*) AS n FROM responses WHERE form_id = ? AND locked = 1",
+    formId,
+  );
   return r?.n ?? 0;
 }
 
@@ -294,7 +309,7 @@ export async function formStats(formId: string, since = 0) {
       since,
     ),
     d.get<{ n: number; avg: number | null }>(
-      `SELECT COUNT(*) AS n, AVG(duration_ms) AS avg FROM responses WHERE form_id = ? AND submitted_at >= ?`,
+      `SELECT COUNT(*) AS n, AVG(duration_ms) AS avg FROM responses WHERE form_id = ? AND locked = 0 AND submitted_at >= ?`,
       formId,
       since,
     ),

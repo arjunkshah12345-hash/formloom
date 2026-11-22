@@ -5,7 +5,7 @@ import { LogoMark } from "@/components/app/Logo";
 import { TypeIcon } from "@/components/builder/TypeIcon";
 import { GradientBorder } from "@/components/gradients/gradient-border";
 import { CodeTabs } from "@/components/landing/CodeTabs";
-import { CODE, COMPARE, FAQ } from "@/components/landing/content";
+import { CODE, COMPARE, FAQ, PRICING } from "@/components/landing/content";
 import {
   AnalyticsPanel,
   AsciiWordmark,
@@ -54,7 +54,7 @@ export default async function Home() {
               ["Templates", "#templates"],
               ["Results", "#results"],
               ["Developers", "#developers"],
-              ["Self-host", "#self-host"],
+              ["Pricing", "#pricing"],
             ].map(([l, h]) => (
               <a
                 key={l}
@@ -385,6 +385,73 @@ export default async function Home() {
         </Reveal>
       </section>
 
+      {/* ============================================================ pricing */}
+      <section id="pricing" className="mx-auto max-w-[1240px] scroll-mt-24 border-t border-line px-5 py-28">
+        <Reveal>
+          <Label n="11">Pricing</Label>
+          <div className="mt-5 flex flex-wrap items-end justify-between gap-6">
+            <H2 className="max-w-[10ch]">Pay less. Or pay nothing.</H2>
+            <p className="max-w-[44ch] text-lg leading-relaxed text-ink-2">
+              The hosted version has a generous free plan and one flat Pro price. Self-hosted Formloom has
+              every feature, free, forever. Paid form builders typically start around $25 a month for 100
+              responses.
+            </p>
+          </div>
+        </Reveal>
+        <div className="mt-14 grid gap-4 lg:grid-cols-3">
+          {PRICING.map((p, i) => (
+            <Reveal key={p.name} delay={0.05 * i}>
+              <div
+                className={`flex h-full flex-col rounded-3xl border p-7 ${
+                  p.featured ? "border-accent/50 bg-accent/[0.07]" : "border-line"
+                }`}
+              >
+                <div className="flex items-center justify-between font-tech text-[11px] tracking-[0.12em] uppercase">
+                  <span className={p.featured ? "text-accent" : "text-ink-3"}>{p.name}</span>
+                  {p.tag ? <span className="rounded-full bg-accent px-2.5 py-1 text-white">{p.tag}</span> : null}
+                </div>
+                <p className="mt-6 font-heading text-6xl font-medium tracking-[-0.045em]">
+                  {p.price}
+                  <span className="ml-1 font-sans text-base tracking-normal text-ink-3">{p.per}</span>
+                </p>
+                <p className="mt-2 min-h-10 text-sm text-ink-3">{p.note}</p>
+                <ul className="mt-6 flex-1 space-y-2.5 border-t border-line pt-6 text-[15px] text-ink-2">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex gap-2.5">
+                      <Check className="mt-1 size-4 shrink-0 text-accent" strokeWidth={2.5} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                {p.href.startsWith("http") ? (
+                  <a
+                    href={p.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-8 inline-flex h-11 items-center justify-center rounded-full border border-line-2 text-[15px] transition hover:border-ink-3"
+                  >
+                    {p.cta}
+                  </a>
+                ) : (
+                  <Link
+                    href={p.href === "cta" ? cta : p.href === "pro" ? (user ? "/account#plan" : "/signup") : p.href}
+                    className={`mt-8 inline-flex h-11 items-center justify-center rounded-full text-[15px] font-medium transition ${
+                      p.featured ? "bg-accent text-white hover:brightness-110" : "bg-ink text-paper hover:bg-white"
+                    }`}
+                  >
+                    {p.cta}
+                  </Link>
+                )}
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <p className="mt-6 text-center text-sm text-ink-3">
+          Go past the free limit and nothing breaks: your form keeps working and every response is saved. Cancel Pro
+          whenever you like and keep all your data.
+        </p>
+      </section>
+
       {/* ========================================================== self-host */}
       <section
         id="self-host"
@@ -392,7 +459,7 @@ export default async function Home() {
       >
         <div className="[&>*]:min-w-0 mx-auto grid max-w-[1240px] items-center gap-12 px-5 py-28 lg:grid-cols-2">
           <Reveal>
-            <Label n="11">Self-host</Label>
+            <Label n="12">Self-host</Label>
             <H2 className="mt-5">Your server. Anywhere on earth.</H2>
             <p className="mt-6 max-w-[42ch] text-lg leading-relaxed text-ink-2">
               One Next.js process and one SQLite file. No Postgres, no Redis, no
@@ -422,7 +489,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <OpenSource n="12" repo={REPO_URL} />
+      <OpenSource n="13" repo={REPO_URL} />
 
       {/* ================================================================ faq */}
       <section
@@ -430,7 +497,7 @@ export default async function Home() {
         className="[&>*]:min-w-0 mx-auto grid max-w-[1240px] scroll-mt-24 gap-12 px-5 py-28 lg:grid-cols-[0.8fr_1.2fr]"
       >
         <Reveal>
-          <Label n="13">FAQ</Label>
+          <Label n="14">FAQ</Label>
           <H2 className="mt-5">Questions, answered.</H2>
           <p className="mt-5 text-ink-2">
             Something else?{" "}
@@ -480,8 +547,8 @@ export default async function Home() {
                 Your next form deserves better.
               </H2>
               <p className="mt-6 max-w-[40ch] text-lg text-white/75">
-                Build one in two minutes, or start from a template. Free and
-                open source.
+                Build one in two minutes, or start from a template. Free to
+                start, open source forever.
               </p>
               <div className="mt-10 flex flex-wrap gap-2">
                 <Link
@@ -527,6 +594,7 @@ export default async function Home() {
               ["Results", "#results"],
               ["Privacy", "#privacy"],
               ["Self-host", "#self-host"],
+              ["Pricing", "#pricing"],
               ["FAQ", "#faq"],
             ]}
           />

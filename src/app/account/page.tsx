@@ -1,13 +1,23 @@
 import { AppHeader } from "@/components/app/AppHeader";
 import { ApiKeys } from "@/components/app/ApiKeys";
+import { PlanCard } from "@/components/app/PlanCard";
 import { requireUser } from "@/lib/auth";
+import { getPlan, heldResponses, monthlyUsage, syncFromStripe } from "@/lib/billing";
 import { db } from "@/lib/db";
 import { appUrl } from "@/lib/url";
 
-export const metadata = { title: "API & account" };
+export const metadata = { title: "Account" };
 
-export default async function AccountPage() {
+export default async function AccountPage({ searchParams }: PageProps<"/account">) {
   const user = await requireUser();
+  const justUpgraded = (await searchParams).upgraded === "1";
+  let plan = await getPlan(user.id);
+  // Back from Checkout before Stripe's webhook landed: ask Stripe directly.
+  if (justUpgraded && plan.kind === "free") {
+    await syncFromStripe(user.id).catch(() => {});
+    plan = await getPlan(user.id);
+  }
+  const [usage, held] = await Promise.all([monthlyUsage(user.id), heldResponses(user.id)]);
   const keys = await (await db()).all<{
     id: string;
     name: string;
@@ -28,6 +38,7 @@ export default async function AccountPage() {
             Signed in as <b className="font-medium text-ink">{user.name}</b> · {user.email}
           </p>
         </div>
+        <PlanCard plan={plan} usage={usage} held={held} justUpgraded={justUpgraded} />
         <ApiKeys keys={keys} baseUrl={await appUrl()} />
       </main>
     </div>

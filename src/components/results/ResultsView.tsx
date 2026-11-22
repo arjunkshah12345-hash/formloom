@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Download, Inbox, Monitor, Search, Smartphone, Star, Trash2, X } from "lucide-react";
@@ -32,6 +32,7 @@ export function ResultsView({
   summary,
   responses,
   isPublished,
+  notice,
 }: {
   formId: string;
   def: FormDefinition;
@@ -41,6 +42,8 @@ export function ResultsView({
   summary: FieldSummary[];
   responses: ResponseRow[];
   isPublished: boolean;
+  /** Rendered above the results, e.g. responses held past the free allowance. */
+  notice?: ReactNode;
 }) {
   const router = useRouter();
   const nav = (patch: { range?: string; view?: string }) => {
@@ -51,6 +54,7 @@ export function ResultsView({
   return (
     <div className="h-full overflow-y-auto">
       <div className="mx-auto max-w-6xl px-5 py-8">
+        {notice ? <div className="mb-6">{notice}</div> : null}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Segmented
             value={view}

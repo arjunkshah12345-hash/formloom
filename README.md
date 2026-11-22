@@ -82,6 +82,23 @@ Schema changes go in `migrations/` (for D1) and in `MIGRATIONS` in `src/lib/db.t
 | `SECURE_COOKIES` | on when `APP_URL` is https | Force the `Secure` cookie flag |
 | `GOOGLE_CLIENT_ID` | unset | OAuth client ID; with the secret, turns on "Continue with Google" |
 | `GOOGLE_CLIENT_SECRET` | unset | OAuth client secret. Redirect URI: `<your URL>/api/auth/google/callback` |
+| `STRIPE_SECRET_KEY` | unset | Turns on hosted plans (Free and Pro). Leave unset when self-hosting |
+| `STRIPE_WEBHOOK_SECRET` | unset | Signing secret for `<your URL>/api/billing/webhook` |
+
+## Pricing
+
+Self-hosted Formloom has no plans: every feature is on and nothing is metered.
+
+The hosted version ([formloom.arjunkshah21.workers.dev](https://formloom.arjunkshah21.workers.dev)) turns on two plans when `STRIPE_SECRET_KEY` is set:
+
+| | Free | Pro |
+| --- | --- | --- |
+| Price | $0 | $6/month billed yearly, or $8 monthly |
+| Responses | 1,000 a month | Unlimited |
+| "Made with Formloom" badge | Always shown | Optional |
+| Everything else | Included | Included |
+
+Past the free allowance, forms keep working and every response is saved. The extra ones are held, hidden from results, exports, the API and webhooks, and appear as soon as the account upgrades. Prices live in `src/lib/plans.ts`. Checkout defines the price inline, so Stripe needs no products set up beforehand. Point a Stripe webhook at `/api/billing/webhook` with `checkout.session.completed` and `customer.subscription.created`, `.updated` and `.deleted`, and turn on the customer portal in Stripe's settings.
 
 ## Embedding
 
