@@ -189,6 +189,8 @@ export async function createCheckout(
         }
       : { "subscription_data[metadata][formloom_user_id]": user.id }),
     allow_promotion_codes: true,
+    // The Stripe account may belong to another business; show "Formloom" on the Checkout page either way.
+    "branding_settings[display_name]": "Formloom",
     billing_address_collection: "auto",
     "customer_update[address]": "auto",
     "customer_update[name]": "auto",
