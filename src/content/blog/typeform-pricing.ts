@@ -49,7 +49,7 @@ All figures come from Typeform's pricing page and help center in November 2026. 
 | Plan | Billed yearly | Billed monthly | Responses/month | Seats | Notable features |
 | --- | --- | --- | --- | --- | --- |
 | Free | $0 | $0 | 10 | 1 | Unlimited forms, logic, embeds, integrations; Typeform branding |
-| Basic | $28/mo ($468/yr) | $39/mo | 100 | 1 | AI form creation, logic, webhooks and integrations |
+| Basic | $28/mo ($336/yr) | $39/mo | 100 | 1 | AI form creation, logic, webhooks and integrations |
 | Plus | $56/mo | $79/mo | 1,000 | 3 | Branding removal, custom subdomain |
 | Business | $91/mo | $129/mo | 10,000 | 5 | Drop-off rates, conversion tracking, priority support |
 | Talent | $119/mo | $169/mo | 3,000 | 3 | Video Q&A, reCAPTCHA, multi-language |

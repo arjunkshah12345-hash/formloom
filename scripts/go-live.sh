@@ -10,6 +10,13 @@ set -euo pipefail
 SECRET_FILE="${FORMLOOM_WEBHOOK_SECRET_FILE:-$HOME/.config/formloom/stripe-live-webhook-secret}"
 [[ -s "$SECRET_FILE" ]] || { echo "No webhook secret at $SECRET_FILE. Run scripts/stripe-setup.sh --live first." >&2; exit 1; }
 
+# An unrelated CLOUDFLARE_API_TOKEN in the shell (e.g. a Workers AI token) overrides `wrangler login` and
+# can't write Worker secrets. If it has no access to this Worker, fall back to the wrangler login.
+if [[ -n "${CLOUDFLARE_API_TOKEN:-}" ]] && ! npx wrangler secret list >/dev/null 2>&1; then
+  echo "CLOUDFLARE_API_TOKEN can't manage this Worker; using your wrangler login instead."
+  unset CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
+fi
+
 read -rsp "Live Stripe secret key (sk_live_… or rk_live_…): " KEY; echo
 [[ "$KEY" == sk_live_* || "$KEY" == rk_live_* ]] || { echo "That isn't a live key." >&2; exit 1; }
 
