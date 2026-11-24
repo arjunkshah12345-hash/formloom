@@ -2,6 +2,8 @@ import "server-only";
 import { db } from "./db";
 import {
   FREE_MONTHLY_RESPONSES,
+  LAUNCH_CODE,
+  launchActive,
   LIFETIME_PRICE,
   PRICE_LOOKUP_KEYS,
   PRO_PRICE,
@@ -157,6 +159,16 @@ async function priceId(purchase: Purchase): Promise<string | null> {
   return priceCache.get(purchase) ?? null;
 }
 
+/** The active LAUNCH_CODE promotion code, if the Stripe account has one. */
+let launchPromo: string | null | undefined;
+async function launchPromotionCode(): Promise<string | null> {
+  if (launchPromo === undefined) {
+    const list = await stripe<{ data: { id: string }[] }>("GET", "promotion_codes", { code: LAUNCH_CODE, active: true, limit: 1 });
+    launchPromo = list.data[0]?.id ?? null;
+  }
+  return launchPromo;
+}
+
 /** A Stripe Checkout page: Pro monthly or yearly, or Lifetime paid once. */
 export async function createCheckout(
   user: { id: string; email: string; name: string },
@@ -173,7 +185,7 @@ export async function createCheckout(
         "line_items[0][price_data][product_data][name]": lifetime ? "Formloom Pro Lifetime" : "Formloom Pro",
         ...(lifetime ? {} : { "line_items[0][price_data][recurring][interval]": purchase }),
       };
-  const session = await stripe<{ url: string }>("POST", "checkout/sessions", {
+  const params: StripeParams = {
     mode: lifetime ? "payment" : "subscription",
     customer: await customerFor(user),
     client_reference_id: user.id,
@@ -197,8 +209,17 @@ export async function createCheckout(
     "tax_id_collection[enabled]": true,
     success_url: `${baseUrl}/account?upgraded=1`,
     cancel_url: `${baseUrl}/account`,
-  });
-  return session.url;
+  };
+  // During launch, Pro gets LAUNCH_CODE without typing it. Stripe refuses a discount the customer can't use
+  // (say, they've paid before), so fall back to the plain page with the promo-code box.
+  const promo = !lifetime && price && launchActive() ? await launchPromotionCode().catch(() => null) : null;
+  if (promo) {
+    const { allow_promotion_codes: _, ...rest } = params;
+    try {
+      return (await stripe<{ url: string }>("POST", "checkout/sessions", { ...rest, "discounts[0][promotion_code]": promo })).url;
+    } catch {}
+  }
+  return (await stripe<{ url: string }>("POST", "checkout/sessions", params)).url;
 }
 
 /** Formloom's own portal configuration (scripts/stripe-setup.sh), or the account default if there isn't one. */

@@ -30,6 +30,16 @@ export const PRICE_LOOKUP_KEYS: Record<Purchase, string> = {
 export const LAUNCH_CODE = "LAUNCH50";
 
 /**
+ * The launch offer runs until this instant. Until then Checkout applies LAUNCH_CODE by itself and the
+ * site shows the launch banner and launch prices; afterwards both disappear on their own.
+ */
+export const LAUNCH_ENDS = "2026-12-15T08:00:00Z";
+export const launchActive = (now = Date.now()) => now < Date.parse(LAUNCH_ENDS);
+/** "December 15", for copy. */
+export const launchEndsLabel = () =>
+  new Date(Date.parse(LAUNCH_ENDS) - 1).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "America/Los_Angeles" });
+
+/**
  * The cheapest paid plan elsewhere, USD per month at its lowest advertised billing (checked November 2026).
  * Update when they change; the landing page reads from here.
  */

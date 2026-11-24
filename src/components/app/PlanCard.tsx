@@ -1,7 +1,7 @@
 import { Check, Server } from "lucide-react";
 import { openBillingPortal, startCheckout } from "@/lib/actions/billing";
 import type { Plan } from "@/lib/billing";
-import { dollars, FREE_MONTHLY_RESPONSES, LAUNCH_CODE, LIFETIME_PRICE, PLAN_FEATURES, PRO_PRICE } from "@/lib/plans";
+import { dollars, FREE_MONTHLY_RESPONSES, launchActive, launchEndsLabel, LIFETIME_PRICE, PLAN_FEATURES, PRO_PRICE } from "@/lib/plans";
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 const date = (ms: number) => new Date(ms).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
@@ -93,6 +93,7 @@ export function PlanCard({
     );
   }
 
+  const launch = launchActive();
   const pct = Math.min(100, (usage.used / FREE_MONTHLY_RESPONSES) * 100);
   return (
     <section id="plan" className="card scroll-mt-24 p-6">
@@ -131,18 +132,36 @@ export function PlanCard({
         <div className="flex flex-col gap-2">
           <form action={startCheckout}>
             <input type="hidden" name="interval" value="year" />
-            <button className="btn-accent w-full">Upgrade, {dollars(PRO_PRICE.year)}/year</button>
+            <button className="btn-accent w-full">
+              {launch ? (
+                <>
+                  Upgrade, <s className="opacity-60">{dollars(PRO_PRICE.year)}</s> {dollars(PRO_PRICE.year / 2)} first year
+                </>
+              ) : (
+                <>Upgrade, {dollars(PRO_PRICE.year)}/year</>
+              )}
+            </button>
           </form>
           <form action={startCheckout}>
             <input type="hidden" name="interval" value="month" />
-            <button className="btn-outline w-full">{dollars(PRO_PRICE.month)}/month</button>
+            <button className="btn-outline w-full">
+              {launch ? (
+                <>
+                  <s className="opacity-60">{dollars(PRO_PRICE.month)}</s> {dollars(PRO_PRICE.month / 2)} first month
+                </>
+              ) : (
+                <>{dollars(PRO_PRICE.month)}/month</>
+              )}
+            </button>
           </form>
         </div>
       </div>
-      <p className="mt-3 text-xs text-ink-3">
-        Launch offer: code <span className="font-tech text-ink-2">{LAUNCH_CODE}</span> takes half off your first Pro
-        payment.
-      </p>
+      {launch ? (
+        <p className="mt-3 text-xs text-ink-3">
+          <span className="text-accent">Launch offer:</span> half off your first Pro payment, applied at checkout. Ends{" "}
+          {launchEndsLabel()}.
+        </p>
+      ) : null}
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed border-line-2 p-5">
         <div>

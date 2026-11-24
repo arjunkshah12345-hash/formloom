@@ -56,7 +56,18 @@ function CopyPrompt({ text }: { text: string }) {
 }
 
 /** Quiet centred hero: small headline, two actions, a dithered horizon underneath. */
-export function HeroHorizon({ cta, repo, base }: { cta: string; repo: string; base: string }) {
+export function HeroHorizon({
+  cta,
+  repo,
+  base,
+  launchEnds,
+}: {
+  cta: string;
+  repo: string;
+  base: string;
+  /** Set while the launch offer runs, e.g. "December 15". */
+  launchEnds: string | null;
+}) {
   const prompt = agentPrompt({ base });
 
   return (
@@ -73,11 +84,13 @@ export function HeroHorizon({ cta, repo, base }: { cta: string; repo: string; ba
 
       <div className="fl-hero-in mx-auto flex w-full max-w-[760px] flex-col items-center px-5 pt-36 text-center sm:pt-44">
         <a
-          href="#themes"
+          href={launchEnds ? "#pricing" : "#themes"}
           className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pr-2.5 pl-1 text-[12.5px] text-ink-3 transition hover:text-ink-2"
         >
-          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium text-accent">New</span>
-          9 themes and 16 question types
+          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-medium text-accent">
+            {launchEnds ? "Launch" : "New"}
+          </span>
+          {launchEnds ? `Pro is half off until ${launchEnds}` : "9 themes and 16 question types"}
           <ChevronRight className="size-3.5 transition group-hover:translate-x-0.5" />
         </a>
 
@@ -95,14 +108,14 @@ export function HeroHorizon({ cta, repo, base }: { cta: string; repo: string; ba
             href={cta}
             className="group inline-flex h-10 items-center gap-1 rounded-full bg-accent pr-3 pl-4.5 text-[14px] font-medium text-white transition hover:brightness-110"
           >
-            Build a form
+            Build a form free
             <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
           </Link>
           <CopyPrompt text={prompt} />
         </div>
 
         <p className="mt-6 text-[13px] text-ink-3">
-          MIT licensed ·{" "}
+          1,000 responses a month free · No credit card · MIT licensed ·{" "}
           <a
             href={repo}
             target="_blank"

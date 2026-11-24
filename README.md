@@ -2,6 +2,10 @@
 
 **Open-source, self-hostable conversational forms — an alternative to Typeform.**
 
+[![MIT license](https://img.shields.io/badge/license-MIT-ff5b2e)](LICENSE) [![Try it free](https://img.shields.io/badge/try%20it-free-171612)](https://formloom.arjunkshah21.workers.dev) [![GitHub stars](https://img.shields.io/github/stars/arjunkshah12345-hash/formloom?style=flat&color=ff5b2e)](https://github.com/arjunkshah12345-hash/formloom/stargazers)
+
+![The Formloom form builder](docs/screenshot.png)
+
 Build beautiful one-question-at-a-time forms with logic jumps, answer recall, themes and real analytics, and keep every response on your own server. One Next.js app, one SQLite file, no external services.
 
 **Try it hosted:** https://formloom.arjunkshah21.workers.dev — make an account, build a form and publish it. Or self-host it below.
