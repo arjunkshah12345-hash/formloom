@@ -21,7 +21,7 @@ jobs:
       # The real site runs on Cloudflare (Workers + D1); this Pages address just forwards to it.
       - name: Write redirect page
         env:
-          SITE_URL: https://formloom.arjunkshah21.workers.dev
+          SITE_URL: https://formloom.app
         run: |
           mkdir -p out
           cat > out/index.html <<HTML

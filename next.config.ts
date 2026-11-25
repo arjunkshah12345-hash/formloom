@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Server actions reject cross-origin posts. When the app sits behind a proxy on another
+  // host (formloom.app forwards to the Worker), allow the public APP_URL host.
+  experimental: {
+    serverActions: {
+      allowedOrigins: process.env.APP_URL ? [new URL(process.env.APP_URL).host] : [],
+    },
+  },
   turbopack: {
     rules: {
       "*.css": {
