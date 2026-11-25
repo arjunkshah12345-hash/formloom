@@ -109,7 +109,7 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
               <dl className="mt-6 divide-y divide-line border-y border-line">
                 {post.faq.map((f) => (
                   <div key={f.q} className="py-5">
-                    <dt className="font-medium text-ink">{f.q}</dt>
+                    <dt><h3 className="font-medium text-ink">{f.q}</h3></dt>
                     <dd className="mt-2 leading-relaxed text-ink-2">{f.a}</dd>
                   </div>
                 ))}

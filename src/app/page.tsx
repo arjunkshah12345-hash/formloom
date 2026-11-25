@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Check, Minus } from "lucide-react";
 import { AsciiBackground } from "@/components/ascii/ascii-background";
@@ -26,17 +27,27 @@ import {
 import { HeroHorizon } from "@/components/landing/hero-horizon";
 import { ThemedDemo } from "@/components/landing/ThemedDemo";
 import { getCurrentUser } from "@/lib/auth";
-import { COMPETITOR_PRICES, dollars, LAUNCH_CODE, LIFETIME_PRICE, PRO_PRICE } from "@/lib/plans";
+import { COMPETITOR_PRICES, dollars, launchActive, launchEndsLabel, LIFETIME_PRICE, PRO_PRICE } from "@/lib/plans";
 import { demoForm } from "@/lib/demo";
 import { FIELD_META, FIELD_TYPES } from "@/lib/schema";
 import { appUrl, REPO_URL } from "@/lib/url";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { SITE_URL } from "@/lib/site";
 
+export const metadata: Metadata = {
+  title: { absolute: "Formloom — the free, open-source Typeform alternative" },
+  description:
+    "Build conversational forms and surveys free: 1,000 responses a month, logic, 16 question types, 9 themes, webhooks and an API. Pro is $6/month. MIT licensed and self-hostable.",
+  alternates: { canonical: "/" },
+  openGraph: { url: "/", title: "Formloom — the free, open-source Typeform alternative" },
+  twitter: { card: "summary_large_image" },
+};
+
 
 export default async function Home() {
   const user = await getCurrentUser();
   const cta = user ? "/forms" : "/signup";
+  const launch = launchActive();
 
   return (
     <div className="dark min-h-dvh overflow-x-clip bg-paper font-sans text-ink selection:bg-accent selection:text-white">
@@ -123,7 +134,7 @@ export default async function Home() {
       </header>
 
       {/* =============================================================== hero */}
-      <HeroHorizon cta={cta} repo={REPO_URL} base={await appUrl()} />
+      <HeroHorizon cta={cta} repo={REPO_URL} base={await appUrl()} launchEnds={launch ? launchEndsLabel() : null} />
 
       {/* =============================================================== demo */}
       <section id="demo" className="relative scroll-mt-24 px-5 pt-10 pb-28">
@@ -439,13 +450,28 @@ export default async function Home() {
               >
                 <div className="flex items-center justify-between font-tech text-[11px] tracking-[0.12em] uppercase">
                   <span className={p.featured ? "text-accent" : "text-ink-3"}>{p.name}</span>
-                  {p.tag ? <span className="rounded-full bg-accent px-2.5 py-1 text-white">{p.tag}</span> : null}
+                  {p.featured && launch ? (
+                    <span className="rounded-full bg-accent px-2.5 py-1 text-white">Launch · 50% off</span>
+                  ) : p.tag ? (
+                    <span className="rounded-full bg-accent px-2.5 py-1 text-white">{p.tag}</span>
+                  ) : null}
                 </div>
                 <p className="mt-6 font-heading text-6xl font-medium tracking-[-0.045em]">
-                  {p.price}
+                  {p.featured && launch ? (
+                    <>
+                      <s className="mr-2 text-3xl text-ink-3 decoration-2">{p.price}</s>
+                      {dollars(PRO_PRICE.year / 24)}
+                    </>
+                  ) : (
+                    p.price
+                  )}
                   <span className="ml-1 font-sans text-base tracking-normal text-ink-3">{p.per}</span>
                 </p>
-                <p className="mt-2 min-h-10 text-sm text-ink-3">{p.note}</p>
+                <p className="mt-2 min-h-10 text-sm text-ink-3">
+                  {p.featured && launch
+                    ? `Your first year at half price (${dollars(PRO_PRICE.year / 2)}), then ${dollars(PRO_PRICE.year)}/year. Or ${dollars(PRO_PRICE.month / 2)} for your first month. Offer ends ${launchEndsLabel()}.`
+                    : p.note}
+                </p>
                 <ul className="mt-6 flex-1 space-y-2.5 border-t border-line pt-6 text-[15px] text-ink-2">
                   {p.features.map((f) => (
                     <li key={f} className="flex gap-2.5">
@@ -481,8 +507,8 @@ export default async function Home() {
           <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-dashed border-line-2 px-7 py-5">
             <p className="text-[15px] text-ink-2">
               <span className="font-medium text-ink">Hate subscriptions?</span> Get Pro for life for{" "}
-              {dollars(LIFETIME_PRICE)}, paid once. Launching now: code{" "}
-              <span className="font-tech text-accent">{LAUNCH_CODE}</span> takes half off your first Pro payment.
+              {dollars(LIFETIME_PRICE)}, paid once.
+              {launch ? ` Launch offer: half off your first Pro payment, applied at checkout until ${launchEndsLabel()}.` : null}
             </p>
             <Link
               href={user ? "/account#plan" : "/signup"}
@@ -654,7 +680,7 @@ export default async function Home() {
 
       {/* ============================================================= footer */}
       <footer className="mx-auto max-w-[1240px] px-5 pt-16 pb-10">
-        <div className="[&>*]:min-w-0 grid gap-10 border-b border-line pb-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+        <div className="[&>*]:min-w-0 grid gap-10 border-b border-line pb-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-2">
               <LogoMark className="size-6" />
@@ -689,6 +715,21 @@ export default async function Home() {
               ["AI agents & MCP", "/docs/agents"],
               ["llms.txt", "/llms.txt"],
               ["Source", REPO_URL],
+            ]}
+          />
+          <FooterCol
+            title="Compare"
+            links={[
+              ["Free Typeform alternative", "/typeform-alternative"],
+              ["Best Typeform alternatives", "/blog/best-typeform-alternatives"],
+              ["Formloom vs Typeform", "/blog/formloom-vs-typeform"],
+              ["Is Typeform free?", "/blog/is-typeform-free"],
+              ["Typeform pricing", "/blog/typeform-pricing"],
+              ["Typeform vs Google Forms", "/blog/typeform-vs-google-forms"],
+              ["Typeform vs Tally", "/blog/typeform-vs-tally"],
+              ["Tally alternatives", "/blog/tally-alternatives"],
+              ["Google Forms alternatives", "/blog/google-forms-alternatives"],
+              ["Jotform alternatives", "/blog/jotform-alternatives"],
             ]}
           />
           <FooterCol

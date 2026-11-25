@@ -79,6 +79,10 @@ export const COMPARE: [string, string | boolean, string | boolean][] = [
 
 export const FAQ = [
   {
+    q: "Is there a free alternative to Typeform?",
+    a: "Yes. Formloom makes the same one-question-at-a-time forms as Typeform, and its free plan includes 1,000 responses a month (Typeform's free plan allows 10). It's open source, so you can also self-host it for free with no limits.",
+  },
+  {
     q: "Is Formloom really free?",
     a: "Yes. The hosted version is free for up to 1,000 responses a month with every question type, logic, theme, webhook and the API. Self-hosted Formloom is MIT licensed with no limits at all: run it on your own machine, a $5 VPS or inside your company network.",
   },

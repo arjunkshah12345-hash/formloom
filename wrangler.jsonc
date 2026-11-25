@@ -15,7 +15,7 @@
   "vars": {
     "FORMLOOM_RUNTIME": "cloudflare",
     "SECURE_COOKIES": "true",
-    "APP_URL": "https://formloom.arjunkshah21.workers.dev"
+    "APP_URL": "https://formloom.app"
   },
   "d1_databases": [
     {

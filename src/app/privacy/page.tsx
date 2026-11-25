@@ -9,7 +9,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage title="Privacy policy" updated="21 November 2026">
       <p>
-        This policy covers the hosted Formloom service at formloom.arjunkshah21.workers.dev. If you run Formloom on
+        This policy covers the hosted Formloom service at formloom.app. If you run Formloom on
         your own server, your data never reaches us and this policy does not apply.
       </p>
 

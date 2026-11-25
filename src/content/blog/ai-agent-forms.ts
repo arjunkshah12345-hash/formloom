@@ -74,7 +74,7 @@ It exposes these tools:
 ### Connect it to Claude Code
 
 ~~~bash
-claude mcp add --transport http formloom https://formloom.arjunkshah21.workers.dev/api/mcp \\
+claude mcp add --transport http formloom https://formloom.app/api/mcp \\
   --header "Authorization: Bearer fl_your_api_key"
 ~~~
 
@@ -88,7 +88,7 @@ Most clients take a JSON config with a URL and headers:
 {
   "mcpServers": {
     "formloom": {
-      "url": "https://formloom.arjunkshah21.workers.dev/api/mcp",
+      "url": "https://formloom.app/api/mcp",
       "headers": { "Authorization": "Bearer fl_your_api_key" }
     }
   }
