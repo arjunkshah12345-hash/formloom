@@ -680,7 +680,7 @@ export default async function Home() {
 
       {/* ============================================================= footer */}
       <footer className="mx-auto max-w-[1240px] px-5 pt-16 pb-10">
-        <div className="[&>*]:min-w-0 grid gap-10 border-b border-line pb-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
+        <div className="[&>*]:min-w-0 grid gap-10 border-b border-line pb-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-2">
               <LogoMark className="size-6" />
@@ -715,6 +715,18 @@ export default async function Home() {
               ["AI agents & MCP", "/docs/agents"],
               ["llms.txt", "/llms.txt"],
               ["Source", REPO_URL],
+            ]}
+          />
+          <FooterCol
+            title="Compare"
+            links={[
+              ["Free Typeform alternative", "/typeform-alternative"],
+              ["Best Typeform alternatives", "/blog/best-typeform-alternatives"],
+              ["Formloom vs Typeform", "/blog/formloom-vs-typeform"],
+              ["Typeform pricing", "/blog/typeform-pricing"],
+              ["Tally alternatives", "/blog/tally-alternatives"],
+              ["Google Forms alternatives", "/blog/google-forms-alternatives"],
+              ["Jotform alternatives", "/blog/jotform-alternatives"],
             ]}
           />
           <FooterCol

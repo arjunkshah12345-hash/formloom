@@ -34,6 +34,7 @@ export function BlogShell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-[1120px] flex-wrap items-center justify-between gap-4 px-5 py-10 text-sm text-ink-3">
           <p>Formloom · the open-source Typeform alternative · MIT</p>
           <p className="flex flex-wrap gap-4">
+            <Link href="/typeform-alternative" className="hover:text-ink">Free Typeform alternative</Link>
             <Link href="/blog" className="hover:text-ink">Blog</Link>
             <Link href="/#pricing" className="hover:text-ink">Pricing</Link>
             <Link href="/docs/agents" className="hover:text-ink">For AI agents</Link>
