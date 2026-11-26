@@ -2,7 +2,7 @@ import type { Post } from "./types";
 
 const post: Post = {
   slug: "open-source-typeform-alternative",
-  title: "An open-source, free Typeform alternative you can self-host",
+  title: "Open-source Typeform alternative you can self-host",
   description:
     "Formloom is an open-source Typeform alternative under the MIT license. Self-host it free with Docker, Node or Cloudflare, or use the hosted free plan.",
   date: "2026-11-22",

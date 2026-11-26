@@ -6,6 +6,7 @@ import { fontStack } from "@/components/player/theme";
 import { Reveal } from "@/components/landing/Reveal";
 import { THEME_PRESETS, type FieldType } from "@/lib/schema";
 import { TEMPLATES } from "@/lib/templates";
+import { DeferredStylesheet } from "@/components/landing/DeferredStylesheet";
 
 /* -------------------------------------------------------------- primitives */
 
@@ -133,7 +134,7 @@ export const RADII = { none: "0px", small: "6px", large: "14px", pill: "999px" }
 export function ThemeShowcase({ n }: { n: string }) {
   return (
     <section id="themes" className="relative scroll-mt-24 border-y border-line bg-surface">
-      <link rel="stylesheet" href={THEME_FONTS_HREF} precedence="default" />
+      <DeferredStylesheet href={THEME_FONTS_HREF} />
       <div className="mx-auto max-w-[1240px] px-5 py-28">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">

@@ -10,6 +10,7 @@ const martian = Martian_Mono({ variable: "--font-martian", subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
+  applicationName: "Formloom",
   openGraph: { siteName: "Formloom", type: "website" },
   title: { default: "Formloom — open-source conversational forms", template: "%s · Formloom" },
   description:

@@ -2,7 +2,7 @@ import type { Post } from "./types";
 
 const post: Post = {
   slug: "ai-agent-forms",
-  title: "Add forms to your app with an AI coding agent (Claude Code, Cursor, Codex)",
+  title: "Add forms to your app with Claude Code, Cursor or Codex",
   description:
     "Let Claude Code, Cursor or Codex add forms to your app: Formloom's agent setup prompt, remote MCP server, REST API and llms.txt, with copy-paste examples.",
   date: "2026-11-22",

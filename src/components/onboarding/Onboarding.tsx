@@ -17,7 +17,19 @@ type Path = "agent" | "share";
 
 const STEPS = ["Pick a starting form", "Choose how it goes live", "You're set"];
 
-export function Onboarding({ firstName, base, templates }: { firstName: string; base: string; templates: TemplateInfo[] }) {
+export function Onboarding({
+  firstName,
+  base,
+  templates,
+  offer,
+  justUpgraded,
+}: {
+  firstName: string;
+  base: string;
+  templates: TemplateInfo[];
+  offer: { endsLabel: string; year: number } | null;
+  justUpgraded: boolean;
+}) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [picked, setPicked] = useState("nps");
@@ -88,6 +100,12 @@ export function Onboarding({ firstName, base, templates }: { firstName: string; 
             </li>
           ))}
         </ol>
+
+        {justUpgraded && step === 0 ? (
+          <p className="mt-8 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/[0.08] px-4 py-2 text-sm text-ink">
+            <Check className="size-4 text-accent" strokeWidth={3} /> You&rsquo;re on Pro: unlimited responses, no badge. Let&rsquo;s make your first form.
+          </p>
+        ) : null}
 
         {step === 0 ? (
           <section className="mt-12">
@@ -217,6 +235,21 @@ export function Onboarding({ firstName, base, templates }: { firstName: string; 
                 <PenLine className="size-4" /> Edit &ldquo;{form.title}&rdquo;
               </Link>
             </div>
+            {offer ? (
+              <div className="mt-12 rounded-2xl border border-accent/40 bg-accent/[0.06] p-6">
+                <p className="font-tech text-[11px] tracking-[0.14em] text-accent uppercase">Launch offer · ends {offer.endsLabel}</p>
+                <p className="mt-2 font-heading text-2xl font-medium tracking-tight">Pro is half off your first year</p>
+                <p className="mt-2 text-ink-2">
+                  Free covers 1,000 responses a month. Pro removes the cap and the badge:{" "}
+                  <span className="text-ink-3 line-through">${offer.year / 100}</span>{" "}
+                  <span className="font-medium text-ink">${offer.year / 200}</span> for the first year ($
+                  {(offer.year / 2400).toFixed(0)} a month).
+                </p>
+                <a href="/upgrade?plan=year" className="btn-accent mt-5 h-11 px-6">
+                  Get Pro for ${offer.year / 200} <ArrowRight className="size-4" />
+                </a>
+              </div>
+            ) : null}
           </section>
         ) : null}
 

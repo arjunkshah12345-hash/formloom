@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
 import Player from "@/components/player/Player";
+import { QuestionHeadingLevel } from "@/components/player/shell";
 import { THEME_PRESETS, presetTheme, type FormDefinition } from "@/lib/schema";
 
 const KEYS = Object.keys(THEME_PRESETS);
@@ -31,7 +32,9 @@ export function ThemedDemo({ definition }: { definition: FormDefinition }) {
           </button>
         </div>
         <div className="h-[520px] sm:h-[600px]">
-          <Player key={run} definition={def} mode="preview" contained hidePreviewTag />
+          <QuestionHeadingLevel.Provider value="h2">
+            <Player key={run} definition={def} mode="preview" contained hidePreviewTag />
+          </QuestionHeadingLevel.Provider>
         </div>
       </div>
 

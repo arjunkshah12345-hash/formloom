@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { signupsAllowed } from "@/lib/actions/auth";
 import { googleEnabled } from "@/lib/google";
 
-export const metadata = { title: "Log in" };
+export const metadata = { title: "Log in", alternates: { canonical: "/login" }, robots: { index: false, follow: true } };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   if (await getCurrentUser()) redirect("/forms");
