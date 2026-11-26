@@ -6,11 +6,11 @@ import { POSTS, readingMinutes } from "@/content/blog";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Blog: Typeform alternatives, form builder guides and pricing",
+  title: "Blog: Typeform alternatives, comparisons and guides",
   description:
     "Honest comparisons of Typeform alternatives, form builder pricing and guides to self-hosting and AI-agent forms, from the team behind Formloom.",
   alternates: { canonical: "/blog", types: { "application/rss+xml": "/blog/rss.xml" } },
-  openGraph: { type: "website", url: "/blog", title: "The Formloom blog" },
+  openGraph: { type: "website", url: "/blog", title: "The Formloom blog", images: ["/opengraph-image"] },
 };
 
 const date = (d: string) => new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });

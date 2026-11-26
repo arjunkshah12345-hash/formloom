@@ -2,7 +2,7 @@ import type { Post } from "./types";
 
 const post: Post = {
   slug: "typeform-vs-google-forms",
-  title: "Typeform vs Google Forms: which should you use in 2026?",
+  title: "Typeform vs Google Forms: which to use in 2026",
   description:
     "Typeform vs Google Forms compared on price, response limits, design, logic and integrations, plus a free option that gives you Typeform-style forms without the cap.",
   date: "2026-11-25",

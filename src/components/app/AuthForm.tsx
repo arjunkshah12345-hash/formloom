@@ -13,8 +13,10 @@ export function AuthForm({
   signupsOpen,
   google,
   error,
+  note,
 }: {
   mode: "login" | "signup";
+  note?: string;
   next?: string;
   signupsOpen: boolean;
   google: boolean;
@@ -36,6 +38,9 @@ export function AuthForm({
           <p className="mt-4 text-ink-2">
             {isLogin ? "Log in to your Formloom workspace." : "Create your account. It's free and open source."}
           </p>
+          {note ? (
+            <p className="mt-4 rounded-xl border border-accent/40 bg-accent/[0.08] px-4 py-3 text-sm text-ink">{note}</p>
+          ) : null}
           {google ? (
             <>
               <a

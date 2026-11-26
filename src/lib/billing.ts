@@ -174,6 +174,8 @@ export async function createCheckout(
   user: { id: string; email: string; name: string },
   purchase: Purchase,
   baseUrl: string,
+  /** Where Stripe sends the buyer back to. New accounts go to onboarding instead of /account. */
+  paths: { success?: string; cancel?: string } = {},
 ): Promise<string> {
   const lifetime = purchase === "lifetime";
   const price = await priceId(purchase);
@@ -207,8 +209,8 @@ export async function createCheckout(
     "customer_update[address]": "auto",
     "customer_update[name]": "auto",
     "tax_id_collection[enabled]": true,
-    success_url: `${baseUrl}/account?upgraded=1`,
-    cancel_url: `${baseUrl}/account`,
+    success_url: `${baseUrl}${paths.success ?? "/account?upgraded=1"}`,
+    cancel_url: `${baseUrl}${paths.cancel ?? "/account"}`,
   };
   // During launch, Pro gets LAUNCH_CODE without typing it. Stripe refuses a discount the customer can't use
   // (say, they've paid before), so fall back to the plain page with the promo-code box.

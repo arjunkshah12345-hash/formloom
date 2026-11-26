@@ -2,9 +2,9 @@ import type { Post } from "./types";
 
 const post: Post = {
   slug: "is-typeform-free",
-  title: "Is Typeform free? What the free plan really includes in 2026",
+  title: "Is Typeform free? What the free plan includes (2026)",
   description:
-    "Yes, Typeform has a free plan, but it allows only 10 responses a month and keeps Typeform branding. Here's what's included, what happens at the limit, and free alternatives.",
+    "Yes, but Typeform's free plan allows only 10 responses a month and keeps its branding. What's included, what happens at the limit, and free alternatives.",
   date: "2026-11-25",
   keywords: [
     "is typeform free",

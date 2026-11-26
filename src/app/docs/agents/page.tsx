@@ -13,7 +13,7 @@ export const dynamic = "force-static";
 export const metadata: Metadata = {
   title: "Formloom for AI agents: MCP server, REST API and llms.txt",
   description:
-    "Let Claude, ChatGPT, Cursor or any AI agent create forms, publish them and read responses. Formloom has a remote MCP server, an OpenAPI-described REST API and llms.txt.",
+    "Let Claude, ChatGPT, Cursor or any AI agent create forms, publish them and read responses through a remote MCP server, a REST API and llms.txt.",
   alternates: { canonical: "/docs/agents" },
 };
 

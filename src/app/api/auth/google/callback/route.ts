@@ -51,7 +51,7 @@ export async function GET(req: Request) {
   }
 
   await createSession(user.id);
-  if (isNew) return NextResponse.redirect(`${base}/welcome`);
   const next = flow.next ?? "";
+  if (isNew) return NextResponse.redirect(`${base}${next.startsWith("/upgrade?") ? next : "/welcome"}`);
   return NextResponse.redirect(`${base}${next.startsWith("/") && !next.startsWith("//") ? next : "/forms"}`);
 }

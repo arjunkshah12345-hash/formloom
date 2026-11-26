@@ -2,7 +2,7 @@ import type { Post } from "./types";
 
 const post: Post = {
   slug: "free-typeform-style-form",
-  title: "How to make a Typeform-style form for free (step by step)",
+  title: "How to make a Typeform-style form for free",
   description:
     "How to build a one-question-at-a-time, Typeform-style form for free in about five minutes: questions, logic, a theme, then share or embed it. No credit card.",
   date: "2026-11-25",

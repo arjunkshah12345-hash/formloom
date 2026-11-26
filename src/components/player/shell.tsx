@@ -1,8 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { ArrowRight, Check } from "lucide-react";
 import type { Attachment } from "@/lib/schema";
+
+/** The question title is the page's h1 on a live form; embedded demos (like the landing page) use h2. */
+export const QuestionHeadingLevel = createContext<"h1" | "h2">("h1");
 
 /** Minimal, safe rich text: **bold**, *italic*, line breaks, links. */
 export function RichText({ text }: { text: string }) {
@@ -105,9 +108,10 @@ export function QuestionHeading({
   title: ReactNode;
   description?: ReactNode;
 }) {
+  const Tag = useContext(QuestionHeadingLevel);
   return (
     <div className="fl-heading">
-      <h1 className="fl-title">
+      <Tag className="fl-title">
         {number !== undefined ? (
           <span className="fl-number">
             {number}
@@ -118,7 +122,7 @@ export function QuestionHeading({
           {title}
           {required ? <span className="fl-required">*</span> : null}
         </span>
-      </h1>
+      </Tag>
       {description ? <div className="fl-description">{description}</div> : null}
     </div>
   );

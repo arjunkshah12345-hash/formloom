@@ -2,7 +2,7 @@ import type { Post } from "./types";
 
 const post: Post = {
   slug: "typeform-pricing",
-  title: "Typeform pricing in 2026, explained (and what it costs to switch)",
+  title: "Typeform pricing in 2026: every plan and limit explained",
   description:
     "Typeform pricing in 2026: every plan, response limit and seat count, what happens when you hit the cap, and what it costs to switch to a cheaper alternative.",
   date: "2026-11-22",

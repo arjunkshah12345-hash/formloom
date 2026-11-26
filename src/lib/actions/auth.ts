@@ -28,8 +28,9 @@ export async function signup(_: AuthState, data: FormData): Promise<AuthState> {
 
   const user = await insertUser(email, name, password);
   await createSession(user.id);
-  // Onboarding creates the first form.
-  redirect("/welcome");
+  // Someone who clicked a "buy" button goes straight on to Checkout; everyone else to onboarding.
+  const next = String(data.get("next") ?? "");
+  redirect(next.startsWith("/upgrade?") ? next : "/welcome");
 }
 
 export async function login(_: AuthState, data: FormData): Promise<AuthState> {

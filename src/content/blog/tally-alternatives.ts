@@ -2,7 +2,7 @@ import type { Post } from "./types";
 
 const post: Post = {
   slug: "tally-alternatives",
-  title: "Tally alternatives: when you need more than a free form builder",
+  title: "Tally alternatives for Typeform-style forms",
   description:
     "Looking for a Tally alternative? Compare Formloom, Fillout, Youform, Typeform and Jotform on price, branding, self-hosting and the one-question-at-a-time flow.",
   date: "2026-11-22",

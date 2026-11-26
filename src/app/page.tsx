@@ -25,7 +25,7 @@ import {
   UseCaseMarquee,
 } from "@/components/landing/sections";
 import { HeroHorizon } from "@/components/landing/hero-horizon";
-import { ThemedDemo } from "@/components/landing/ThemedDemo";
+import { ThemedDemoLazy } from "@/components/landing/ThemedDemoLazy";
 import { getCurrentUser } from "@/lib/auth";
 import { COMPETITOR_PRICES, dollars, launchActive, launchEndsLabel, LIFETIME_PRICE, PRO_PRICE } from "@/lib/plans";
 import { demoForm } from "@/lib/demo";
@@ -37,7 +37,7 @@ import { SITE_URL } from "@/lib/site";
 export const metadata: Metadata = {
   title: { absolute: "Formloom — the free, open-source Typeform alternative" },
   description:
-    "Build conversational forms and surveys free: 1,000 responses a month, logic, 16 question types, 9 themes, webhooks and an API. Pro is $6/month. MIT licensed and self-hostable.",
+    "The free, open-source Typeform alternative: one-question-at-a-time forms with 1,000 free responses a month, logic, themes and webhooks. Pro is $6/month.",
   alternates: { canonical: "/" },
   openGraph: { url: "/", title: "Formloom — the free, open-source Typeform alternative" },
   twitter: { card: "summary_large_image" },
@@ -53,6 +53,25 @@ export default async function Home() {
     <div className="dark min-h-dvh overflow-x-clip bg-paper font-sans text-ink selection:bg-accent selection:text-white">
       <JsonLd
         data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "@id": `${SITE_URL}/#organization`,
+            name: "Formloom",
+            url: SITE_URL,
+            logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png`, width: 512, height: 512 },
+            description: "The free, open-source Typeform alternative: conversational forms and surveys.",
+            sameAs: [REPO_URL],
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "@id": `${SITE_URL}/#website`,
+            name: "Formloom",
+            alternateName: ["formloom.app", "Formloom forms"],
+            url: SITE_URL,
+            publisher: { "@id": `${SITE_URL}/#organization` },
+          },
           {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
@@ -153,7 +172,7 @@ export default async function Home() {
               className="shadow-[0_60px_160px_-60px_rgba(255,91,46,.45)]"
             >
               <div className="overflow-hidden rounded-[21px]">
-                <ThemedDemo definition={demoForm()} />
+                <ThemedDemoLazy definition={demoForm()} />
               </div>
             </GradientBorder>
           </Reveal>
@@ -491,7 +510,7 @@ export default async function Home() {
                   </a>
                 ) : (
                   <Link
-                    href={p.href === "cta" ? cta : p.href === "pro" ? (user ? "/account#plan" : "/signup") : p.href}
+                    href={p.href === "cta" ? cta : p.href === "pro" ? "/upgrade?plan=year" : p.href}
                     className={`mt-8 inline-flex h-11 items-center justify-center rounded-full text-[15px] font-medium transition ${
                       p.featured ? "bg-accent text-white hover:brightness-110" : "bg-ink text-paper hover:bg-white"
                     }`}
@@ -511,10 +530,10 @@ export default async function Home() {
               {launch ? ` Launch offer: half off your first Pro payment, applied at checkout until ${launchEndsLabel()}.` : null}
             </p>
             <Link
-              href={user ? "/account#plan" : "/signup"}
+              href="/upgrade?plan=lifetime"
               className="inline-flex h-10 items-center rounded-full border border-line-2 px-5 text-sm transition hover:border-ink-3"
             >
-              {user ? "See plans" : "Start free"}
+              Get Lifetime, {dollars(LIFETIME_PRICE)}
             </Link>
           </div>
         </Reveal>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/app/LegalPage";
 
-export const metadata: Metadata = { title: "Terms of service · Formloom" };
+export const metadata: Metadata = { title: "Terms of service", alternates: { canonical: "/terms" } };
 
 const REPO = "https://github.com/arjunkshah12345-hash/formloom";
 

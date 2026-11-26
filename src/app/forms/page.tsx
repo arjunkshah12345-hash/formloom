@@ -1,7 +1,9 @@
 import { AppHeader } from "@/components/app/AppHeader";
 import { FormsGrid } from "@/components/app/FormsGrid";
 import { HeldNotice } from "@/components/app/PlanNotice";
-import { heldResponses } from "@/lib/billing";
+import { LaunchOffer } from "@/components/app/LaunchOffer";
+import { getPlan, heldResponses } from "@/lib/billing";
+import { launchActive, launchEndsLabel, LIFETIME_PRICE, PRO_PRICE } from "@/lib/plans";
 import { requireUser } from "@/lib/auth";
 import { listForms } from "@/lib/forms";
 import { TEMPLATES } from "@/lib/templates";
@@ -16,6 +18,7 @@ export default async function FormsPage() {
     return { key, name, description, theme: def.theme, sample: def.welcome.enabled ? def.welcome.title : def.fields[0]?.title ?? "" };
   });
   const total = forms.reduce((n, f) => n + f.responseCount, 0);
+  const offer = launchActive() && (await getPlan(user.id)).kind === "free";
   return (
     <div className="min-h-dvh">
       <AppHeader user={user} />
@@ -30,6 +33,7 @@ export default async function FormsPage() {
           totalResponses={total}
         />
       </main>
+      {offer ? <LaunchOffer endsLabel={launchEndsLabel()} year={PRO_PRICE.year} month={PRO_PRICE.month} lifetime={LIFETIME_PRICE} /> : null}
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { REPO_URL } from "@/lib/url";
 
 const TITLE = "Free Typeform alternative: open source, 1,000 responses free";
 const DESCRIPTION =
-  "Formloom is a free Typeform alternative: the same one-question-at-a-time forms, 1,000 responses a month free (Typeform gives 10), Pro at $6/month, or self-host it free. MIT licensed.";
+  "A free Typeform alternative: the same one-question-at-a-time forms with 1,000 free responses a month (Typeform gives 10). Pro is $6/month. Open source.";
 const PATH = "/typeform-alternative";
 
 export const metadata: Metadata = {
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "self-hosted typeform",
   ],
   alternates: { canonical: PATH },
-  openGraph: { type: "website", url: PATH, title: TITLE, description: DESCRIPTION },
+  openGraph: { type: "website", url: PATH, title: TITLE, description: DESCRIPTION, images: ["/opengraph-image"] },
   twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
 };
 
