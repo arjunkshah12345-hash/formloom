@@ -5,6 +5,7 @@ import { Halftone } from "@/components/dithercn/halftone";
 import { fontStack } from "@/components/player/theme";
 import { Reveal } from "@/components/landing/Reveal";
 import { THEME_PRESETS, type FieldType } from "@/lib/schema";
+import { TEMPLATE_PAGES } from "@/content/template-pages";
 import { TEMPLATES } from "@/lib/templates";
 import { DeferredStylesheet } from "@/components/landing/DeferredStylesheet";
 
@@ -201,7 +202,8 @@ export function TemplateGallery({ n, cta }: { n: string; cta: string }) {
     const def = t.build();
     const types = [...new Set(def.fields.map((f) => f.type))] as FieldType[];
     const logic = def.fields.some((f) => (f.logic?.length ?? 0) > 0 || f.fallbackTo);
-    return { ...t, title: def.fields[0]?.title ?? def.title, count: def.fields.length, endings: def.endings.length, types, logic };
+    const page = TEMPLATE_PAGES.find((p) => p.template === t.key);
+    return { ...t, href: page ? `/templates/${page.slug}` : cta, title: def.fields[0]?.title ?? def.title, count: def.fields.length, endings: def.endings.length, types, logic };
   });
   return (
     <section id="templates" className="mx-auto max-w-[1240px] scroll-mt-24 px-5 py-28">
@@ -211,15 +213,15 @@ export function TemplateGallery({ n, cta }: { n: string; cta: string }) {
             <Label n={n}>Templates</Label>
             <H2 className="mt-5 max-w-[16ch]">Don&apos;t start from nothing.</H2>
           </div>
-          <Link href={cta} className="inline-flex items-center gap-2 font-tech text-[12px] tracking-wide text-accent uppercase hover:underline">
-            Use a template <ArrowUpRight className="size-3.5" />
+          <Link href="/templates" className="inline-flex items-center gap-2 font-tech text-[12px] tracking-wide text-accent uppercase hover:underline">
+            All free templates <ArrowUpRight className="size-3.5" />
           </Link>
         </div>
       </Reveal>
       <div className="mt-14 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
         {items.map((t, i) => (
           <Reveal key={t.key} delay={(i % 3) * 0.05} className="bg-paper">
-            <Link href={cta} className="group flex h-full flex-col p-7 transition hover:bg-surface">
+            <Link href={t.href} className="group flex h-full flex-col p-7 transition hover:bg-surface">
               <div className="flex items-center justify-between">
                 <div className="flex -space-x-1">
                   {t.types.slice(0, 5).map((ty) => (

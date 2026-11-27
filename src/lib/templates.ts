@@ -243,4 +243,80 @@ export const TEMPLATES: Template[] = [
       };
     },
   },
+  {
+    key: "contact",
+    name: "Contact form",
+    description: "Name, email, topic and message, with a friendly ending.",
+    build: () => {
+      const name = field("short_text", "Hi! What's your name?");
+      const email = field("email", `Thanks {{field:NAME}}. What's your email?`);
+      const topic = field("multiple_choice", "What's this about?", {
+        properties: { choices: choices("A question", "Sales", "Support", "Partnership", "Something else") },
+      });
+      const message = field("long_text", "How can we help?");
+      email.title = email.title.replace("NAME", name.id);
+      return {
+        title: "Contact us",
+        welcome: { enabled: false, title: "Contact us", buttonText: "Start" },
+        fields: [name, email, topic, message],
+        endings: [{ ...defaultEnding(), title: "Message sent ✉️", description: "We usually reply within one working day." }],
+        theme: presetTheme("paper"),
+        settings: defaultSettings(),
+      };
+    },
+  },
+  {
+    key: "waitlist",
+    name: "Waitlist",
+    description: "Collect early-access signups and learn who they are.",
+    build: () => {
+      const email = field("email", "What's your email?", { description: "We'll invite you as soon as there's a spot." });
+      const role = field("multiple_choice", "What best describes you?", {
+        properties: { choices: choices("Founder", "Developer", "Designer", "Marketer", "Student", "Other") },
+      });
+      const why = field("long_text", "What would you use it for?", { required: false });
+      return {
+        title: "Join the waitlist",
+        welcome: {
+          enabled: true,
+          title: "Get early access",
+          description: "Two quick questions and you're on the list.",
+          buttonText: "Join the waitlist",
+        },
+        fields: [email, role, why],
+        endings: [{ ...defaultEnding(), title: "You're on the list 🎉", description: "Keep an eye on your inbox." }],
+        theme: presetTheme("lilac"),
+        settings: defaultSettings(),
+      };
+    },
+  },
+  {
+    key: "csat",
+    name: "Customer satisfaction (CSAT)",
+    description: "A 1–5 rating, what went well, and what to fix.",
+    build: () => {
+      const rating = field("rating", "How satisfied are you with {{hidden:product}}?");
+      const good = field("long_text", "Glad to hear it! What did you like most?", { required: false });
+      const fix = field("long_text", "Sorry about that. What should we fix first?");
+      const again = field("yes_no", "Would you use us again?");
+      rating.logic = [
+        { id: uid("r"), combinator: "and", conditions: [{ fieldId: rating.id, op: "lt", value: "4" }], to: fix.id },
+      ];
+      rating.fallbackTo = good.id;
+      good.fallbackTo = again.id;
+      return {
+        title: "Customer satisfaction survey",
+        welcome: {
+          enabled: true,
+          title: "How did we do?",
+          description: "Three questions, under a minute.",
+          buttonText: "Start",
+        },
+        fields: [rating, good, fix, again],
+        endings: [{ ...defaultEnding(), title: "Thank you!", description: "Every answer is read by a real person." }],
+        theme: presetTheme("sunset"),
+        settings: { ...defaultSettings(), hiddenFields: ["product"] },
+      };
+    },
+  },
 ];

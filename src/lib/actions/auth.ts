@@ -30,7 +30,7 @@ export async function signup(_: AuthState, data: FormData): Promise<AuthState> {
   await createSession(user.id);
   // Someone who clicked a "buy" button goes straight on to Checkout; everyone else to onboarding.
   const next = String(data.get("next") ?? "");
-  redirect(next.startsWith("/upgrade?") ? next : "/welcome");
+  redirect(/^\/(upgrade|use-template)\?/.test(next) ? next : "/welcome");
 }
 
 export async function login(_: AuthState, data: FormData): Promise<AuthState> {

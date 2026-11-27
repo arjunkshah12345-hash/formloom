@@ -14,6 +14,9 @@ export function BlogShell({ children }: { children: ReactNode }) {
             <span className="font-heading">formloom</span>
           </Link>
           <nav className="flex items-center gap-1 font-tech text-[11px] tracking-wide uppercase">
+            <Link href="/templates" className="rounded-full px-3 py-2 text-ink-3 transition hover:text-ink max-sm:hidden">
+              Templates
+            </Link>
             <Link href="/blog" className="rounded-full px-3 py-2 text-ink-3 transition hover:text-ink">
               Blog
             </Link>
@@ -36,6 +39,7 @@ export function BlogShell({ children }: { children: ReactNode }) {
           <p className="flex flex-wrap gap-4">
             <Link href="/typeform-alternative" className="hover:text-ink">Free Typeform alternative</Link>
             <Link href="/blog" className="hover:text-ink">Blog</Link>
+            <Link href="/templates" className="hover:text-ink">Templates</Link>
             <Link href="/#pricing" className="hover:text-ink">Pricing</Link>
             <Link href="/docs/agents" className="hover:text-ink">For AI agents</Link>
             <a href="/llms.txt" className="hover:text-ink">llms.txt</a>

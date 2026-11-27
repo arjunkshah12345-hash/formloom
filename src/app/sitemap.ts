@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { POSTS } from "@/content/blog";
+import { TEMPLATE_PAGES } from "@/content/template-pages";
 import { SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -11,6 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/typeform-alternative`, lastModified: "2026-11-24", changeFrequency: "weekly", priority: 0.95 },
     { url: `${SITE_URL}/blog`, lastModified: latest, changeFrequency: "weekly", priority: 0.9 },
     ...POSTS.map((p) => ({ url: `${SITE_URL}/blog/${p.slug}`, lastModified: p.updated ?? p.date, changeFrequency: "monthly" as const, priority: 0.8 })),
+    { url: `${SITE_URL}/templates`, lastModified: "2026-11-27", changeFrequency: "weekly", priority: 0.85 },
+    ...TEMPLATE_PAGES.map((t) => ({ url: `${SITE_URL}/templates/${t.slug}`, lastModified: "2026-11-27", changeFrequency: "monthly" as const, priority: 0.8 })),
     { url: `${SITE_URL}/docs/agents`, lastModified: latest, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/signup`, changeFrequency: "yearly", priority: 0.5 },
     { url: `${SITE_URL}/terms`, changeFrequency: "yearly", priority: 0.2 },

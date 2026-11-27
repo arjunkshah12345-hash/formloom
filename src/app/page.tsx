@@ -723,6 +723,7 @@ export default async function Home() {
               ["Pricing", "#pricing"],
               ["FAQ", "#faq"],
               ["Blog", "/blog"],
+              ["Free templates", "/templates"],
             ]}
           />
           <FooterCol
