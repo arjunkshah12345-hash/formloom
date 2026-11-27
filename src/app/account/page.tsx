@@ -10,7 +10,9 @@ export const metadata = { title: "Account" };
 
 export default async function AccountPage({ searchParams }: PageProps<"/account">) {
   const user = await requireUser();
-  const justUpgraded = (await searchParams).upgraded === "1";
+  const params = await searchParams;
+  const justUpgraded = params.upgraded === "1";
+  const billingFailed = params.billing === "unavailable";
   let plan = await getPlan(user.id);
   // Back from Checkout before Stripe's webhook landed: ask Stripe directly.
   if (justUpgraded && (plan.kind === "free" || (plan.kind === "pro" && plan.interval !== "lifetime"))) {
@@ -38,6 +40,11 @@ export default async function AccountPage({ searchParams }: PageProps<"/account"
             Signed in as <b className="font-medium text-ink">{user.name}</b> · {user.email}
           </p>
         </div>
+        {billingFailed ? (
+          <p className="rounded-2xl border border-accent/30 bg-accent/[0.08] px-5 py-4 text-sm text-ink-2">
+            Checkout didn’t open. Try the upgrade button again. If it still fails, the card form is down and nothing was charged.
+          </p>
+        ) : null}
         <PlanCard plan={plan} usage={usage} held={held} justUpgraded={justUpgraded} />
         <ApiKeys keys={keys} baseUrl={await appUrl()} />
       </main>

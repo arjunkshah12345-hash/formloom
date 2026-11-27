@@ -30,6 +30,6 @@ export async function GET(req: Request) {
     return NextResponse.redirect(url, 303);
   } catch (e) {
     console.error("upgrade checkout", e);
-    return NextResponse.redirect(`${base}/account#plan`);
+    return NextResponse.redirect(`${base}/account?billing=unavailable#plan`);
   }
 }

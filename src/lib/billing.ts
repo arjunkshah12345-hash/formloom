@@ -126,6 +126,9 @@ async function stripe<T = unknown>(method: "GET" | "POST", path: string, params:
   return json;
 }
 
+/** True when the stored customer id belongs to another Stripe mode (test vs live) or was deleted. */
+const missingCustomer = (e: unknown) => e instanceof Error && /no such customer/i.test(e.message);
+
 async function customerFor(user: { id: string; email: string; name: string }): Promise<string> {
   const d = await db();
   const row = await d.get<{ stripe_customer_id: string | null }>(
@@ -177,6 +180,23 @@ export async function createCheckout(
   /** Where Stripe sends the buyer back to. New accounts go to onboarding instead of /account. */
   paths: { success?: string; cancel?: string } = {},
 ): Promise<string> {
+  try {
+    return await openCheckout(user, purchase, baseUrl, paths);
+  } catch (e) {
+    // A customer saved under the test key (or a rotated account) is invisible to the live key.
+    // Drop it and open Checkout against a new customer instead of failing the upgrade.
+    if (!missingCustomer(e)) throw e;
+    await (await db()).run("UPDATE users SET stripe_customer_id = NULL WHERE id = ?", user.id);
+    return await openCheckout(user, purchase, baseUrl, paths);
+  }
+}
+
+async function openCheckout(
+  user: { id: string; email: string; name: string },
+  purchase: Purchase,
+  baseUrl: string,
+  paths: { success?: string; cancel?: string },
+): Promise<string> {
   const lifetime = purchase === "lifetime";
   const price = await priceId(purchase);
   const line: StripeParams = price
@@ -219,7 +239,11 @@ export async function createCheckout(
     const { allow_promotion_codes: _, ...rest } = params;
     try {
       return (await stripe<{ url: string }>("POST", "checkout/sessions", { ...rest, "discounts[0][promotion_code]": promo })).url;
-    } catch {}
+    } catch (e) {
+      // A dead customer id has to reach createCheckout so it can be replaced. Other Stripe
+      // refusals (a discount they can't use) fall through to Checkout with a promo-code box.
+      if (missingCustomer(e)) throw e;
+    }
   }
   return (await stripe<{ url: string }>("POST", "checkout/sessions", params)).url;
 }
