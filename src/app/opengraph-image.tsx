@@ -1,12 +1,14 @@
 import { ImageResponse } from "next/og";
+import { OG, OgBrand, OgHorizon, ogAssets } from "@/lib/og";
 
 export const dynamic = "force-static";
 
-export const alt = "Formloom: open-source conversational forms";
+export const alt = "Formloom: forms people actually finish. The open-source Typeform alternative.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const { fonts, horizon, mark } = await ogAssets();
   return new ImageResponse(
     (
       <div
@@ -15,32 +17,37 @@ export default function OpengraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          padding: 80,
-          background: "#f6f5f1",
-          color: "#171612",
-          fontFamily: "Georgia, serif",
+          alignItems: "center",
+          position: "relative",
+          background: OG.bg,
+          color: OG.ink,
+          fontFamily: "Funnel Display",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16, fontFamily: "sans-serif", fontSize: 34, fontWeight: 600 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 13, background: "#171612", display: "flex", position: "relative" }}>
-            <div style={{ position: "absolute", left: 14, top: 15, width: 24, height: 4, borderRadius: 4, background: "#f6f5f1" }} />
-            <div style={{ position: "absolute", left: 14, top: 24, width: 15, height: 4, borderRadius: 4, background: "#f6f5f1" }} />
-            <div style={{ position: "absolute", left: 14, top: 33, width: 8, height: 4, borderRadius: 4, background: "#f6f5f1" }} />
-            <div style={{ position: "absolute", left: 31, top: 30, width: 11, height: 11, borderRadius: 11, background: "#ff5b2e" }} />
-          </div>
-          Formloom
+        <OgHorizon src={horizon} />
+        <div style={{ display: "flex", marginTop: 48 }}>
+          <OgBrand mark={mark} />
         </div>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 112, lineHeight: 0.95, letterSpacing: -3, display: "flex", flexWrap: "wrap" }}>
-            Forms people&nbsp;<span style={{ color: "#ff5b2e", fontStyle: "italic" }}>actually</span>&nbsp;finish.
-          </div>
-          <div style={{ marginTop: 28, fontSize: 32, color: "#4a4840", fontFamily: "sans-serif" }}>
-            The open-source, self-hostable alternative to Typeform.
-          </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginTop: 44,
+            fontSize: 104,
+            lineHeight: 1.02,
+            letterSpacing: -4.5,
+          }}
+        >
+          <span>Forms people</span>
+          <span>actually finish.</span>
+        </div>
+        <div style={{ display: "flex", marginTop: 26, fontSize: 30, color: OG.ink2, letterSpacing: -0.5 }}>
+          The open-source Typeform alternative.
+          <span style={{ color: OG.accent, marginLeft: 10 }}>Free to start.</span>
         </div>
       </div>
     ),
-    size,
+    { ...size, fonts },
   );
 }
